@@ -20,7 +20,7 @@ echo "################################################################"
 docker-machine rm -f $(docker-machine ls --filter name=rancher*)
 
 echo "################################################################"
-echo "Download image"
+echo "Download rancheros image"
 echo "################################################################"
 if ! [ -f ./../temp/rancheros.iso ]; then
   curl -o ./../temp/rancheros.iso "https://releases.rancher.com/os/latest/rancheros.iso"
@@ -46,10 +46,15 @@ docker-machine scp -r ./scripts rancher1:/var/lidop/
 echo "################################################################"
 echo "Create Admin Tools"
 echo "################################################################"
+if [ -f ./../temp/admin.tar ]; then
+    docker-machine ssh rancher1 "sudo mkdir -p /var/lidop/images && sudo chmod 777 /var/lidop/images"
+    docker-machine scp ./../temp/admin.tar rancher1:/var/lidop/images/admin.tar
+fi
 docker-machine ssh rancher1 bash /var/lidop/scripts/admintools.sh 
+docker-machine scp rancher1:/var/lidop/images/admin.tar ./../temp/admin.tar 
 
 echo "################################################################"
-echo "Download Images"
+echo "Download Rancher Images"
 echo "################################################################"
 docker-machine ssh rancher1 bash /var/lidop/scripts/downloadImages.sh $rancher_version
 
@@ -89,16 +94,16 @@ do
     docker-machine ssh "rancher${i}" "${nodeCommand}"
 done
 
+
 echo "################################################################"
-echo "Setup kubectl and helm"
+echo "Config"
 echo "################################################################"
-docker-machine ssh rancher1 "helm init --history-max 200"
-docker-machine ssh rancher1 "helm repo update"
-docker-machine ssh rancher1 "helm ls"
-docker-machine ls
-docker-machine ssh rancher1 "kubectl get nodes"
+docker-machine ssh rancher1 bash /var/lidop/scripts/config.sh
 
 echo "################################################################"
 echo "Rancher is ready"
 echo "################################################################"
 echo "Access rancher under: https://${ip}:444 with the user admin and the password ${admin_password}"
+echo "You can find the kubectl config under temp/rancher/config"
+echo "example how to use: kubectl --kubeconfig ./../temp/rancher/config get nodes"
+echo "example how to use: helm --kubeconfig ./../temp/rancher/config ls"

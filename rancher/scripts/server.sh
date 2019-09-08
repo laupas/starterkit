@@ -22,7 +22,7 @@ done
 echo "Login"
 while true; do
 
-    LOGINRESPONSE=$(curl "https://127.0.0.1:444/v3-public/localProviders/local?action=login" -H 'content-type: application/json' --data-binary '{"username":"admin","password":"admin"}' --insecure)
+    LOGINRESPONSE=$(curl -s "https://127.0.0.1:444/v3-public/localProviders/local?action=login" -H 'content-type: application/json' --data-binary '{"username":"admin","password":"admin"}' --insecure)
     LOGINTOKEN=$(echo $LOGINRESPONSE | jq -r .token)
 
     if [ "$LOGINTOKEN" != "null" ]; then
@@ -120,3 +120,5 @@ echo "${KUBECONFIG}" | jq -r .config > /var/lidop/rancher/config
 echo $NODECOMMAND  >> /var/lidop/rancher/installNode.sh
 echo $CLUSTERID > /var/lidop/rancher/clusterid
 echo $APITOKEN > /var/lidop/rancher/token
+sudo mkdir /root/.kube/
+sudo cp  /var/lidop/rancher/config /root/.kube/config
