@@ -6,12 +6,29 @@ rancher_version=${3:-latest}
 export curlimage="admin curl"
 export jqimage="admin jq"
 
+
 echo "################################################################"
 echo "rancher_ip:${rancher_ip}"
 echo "admin_password:${admin_password}"
 echo "rancher_version:${rancher_version}"
 echo "k8s_version:${k8s_version}"
 echo "################################################################"
+
+echo "################################################################"
+echo "Configure curl, kubectl and helm"
+echo "################################################################"
+docker build -t admin /var/lidop 
+echo 'docker run -i --rm admin curl $@' | sudo tee /usr/bin/curl && sudo chmod +x /usr/bin/curl
+echo 'docker run -i --rm -v /var/lidop/kubeconfig:/root/.kube/config admin helm $@' | sudo tee /usr/bin/helm && sudo chmod +x /usr/bin/helm
+echo 'docker run -i --rm -v /var/lidop/kubeconfig:/root/.kube/config admin kubectl $@' | sudo tee /usr/bin/kubectl && sudo chmod +x /usr/bin/kubectl
+
+echo "################################################################"
+echo "Download images"
+echo "################################################################"
+docker pull rancher/rancher:${rancher_version}
+docker pull rancher/rancher-agent:${rancher_version}
+docker save rancher/rancher:${rancher_version} > /var/lidop/rancher.tar
+docker save rancher/rancher-agent:${rancher_version} > /var/lidop/rancher-agent.tar
 
 echo "################################################################"
 echo "Start Rancher"
@@ -121,19 +138,19 @@ export CLUSTERID=`echo $CLUSTERRESPONSE | docker run --rm -i $jqimage -r .id`
 echo "Generate registrationtoken"
 TOKEN=$(docker run --rm --net=host $curlimage -s 'https://127.0.0.1:444/v3/clusterregistrationtoken' -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" --data-binary '{"type":"clusterRegistrationToken","clusterId":"'$CLUSTERID'"}' --insecure)
 
-
 echo "################################################################"
 echo "Create configs"
 echo "################################################################"
 NODECOMMAND=`echo $TOKEN | docker run --rm -i $jqimage -r .nodeCommand`
-echo $NODECOMMAND  >> /tmp/node.sh
+echo $NODECOMMAND  >> /var/lidop/node.sh
 
 KUBECONFIG=$(docker run --rm --net=host $curlimage -s -X POST "https://${rancher_ip}:444/v3/clusters/${CLUSTERID}?action=generateKubeconfig" -H 'content-type: application/json' -H "Authorization: Bearer $APITOKEN" --insecure)
-echo "${KUBECONFIG}" | docker run --rm -i $jqimage -r .config > /tmp/kubeconfig
-cat /tmp/kubeconfig
+echo "${KUBECONFIG}" | docker run --rm -i $jqimage -r .config > /var/lidop/kubeconfig
+cat /var/lidop/kubeconfig
 
-echo $CLUSTERID > /tmp/clusterid
-echo $APITOKEN > /tmp/token
+echo $CLUSTERID > /var/lidop/clusterid
+echo $APITOKEN > /var/lidop/token
 
-export CLUSTERID=$(cat /tmp/clusterid)
-export APITOKEN=$(cat /tmp/token)
+export CLUSTERID=$(cat /var/lidop/clusterid)
+export APITOKEN=$(cat /var/lidop/token)
+
