@@ -103,6 +103,7 @@ docker-machine ssh rancher1 bash /var/lidop/scripts/config.sh
 echo "################################################################"
 echo "Rancher is ready"
 echo "################################################################"
+echo "It can take some minutes, until the server is fully ready. Be patient."
 echo "Access rancher under: https://${ip}:444 with the user admin and the password ${admin_password}"
 echo "You can find the kubectl config under temp/rancher/config"
 echo "example how to use: kubectl --kubeconfig ./../temp/rancher/config get nodes"

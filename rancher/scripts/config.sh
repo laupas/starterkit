@@ -20,6 +20,4 @@ done
 echo "Setup kubectl and helm"
 kubectl create -f /var/lidop/scripts/helm.yml
 helm init --service-account helm --history-max 200
-helm repo update
-helm ls
 kubectl get nodes
