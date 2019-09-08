@@ -102,7 +102,9 @@ docker-machine ssh rancher1 bash /var/starterkit/scripts/config.sh $(docker-mach
 echo "################################################################"
 echo "Install starterkit helm"
 echo "################################################################"
-docker-machine ssh rancher1 "helm --kubeconfig ./temp/rancher/config install ./helm/starterkit"
+docker-machine ssh rancher1 "sudo mkdir -p /var/starterkit/helm && sudo chmod 777 /var/starterkit/helm"
+docker-machine scp -r ./helm/ rancher1:/var/starterkit/
+docker-machine ssh rancher1 "helm  install /var/starterkit/helm/starterkit"
 
 echo "################################################################"
 echo "Rancher is ready"

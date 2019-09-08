@@ -13,7 +13,7 @@ echo "################################################################"
 echo "Start Rancher"
 docker run -d --restart=unless-stopped -p 81:80 -p 444:443 -v /opt/rancher:/var/lib/rancher rancher/rancher:${rancher_version}
 
-echo "wait until rancher server is ready"
+echo "wait until rancher server is started"
 while true; do
   curl -sLk https://127.0.0.1:444/ping && break
   sleep 5
@@ -102,7 +102,7 @@ CLUSTERRESPONSE=$(curl -s 'https://127.0.0.1:444/v3/cluster' -H 'content-type: a
  			}
  		}
  	},
- 	"name": "lidop"
+ 	"name": "starterkit"
  }' --insecure)
 
 echo "Extract clusterid to use for generating the docker run command"
@@ -115,10 +115,10 @@ echo "Create configs"
 NODECOMMAND=`echo $TOKEN | jq -r .nodeCommand`
 KUBECONFIG=$(curl -s -X POST "https://${rancher_ip}:444/v3/clusters/${CLUSTERID}?action=generateKubeconfig" -H "content-type: application/json" -H "Authorization: Bearer $APITOKEN" --insecure)
 
-mkdir -p /var/lidop/rancher
-echo "${KUBECONFIG}" | jq -r .config > /var/lidop/rancher/config
-echo $NODECOMMAND  >> /var/lidop/rancher/installNode.sh
-echo $CLUSTERID > /var/lidop/rancher/clusterid
-echo $APITOKEN > /var/lidop/rancher/token
+mkdir -p /var/starterkit/rancher
+echo "${KUBECONFIG}" | jq -r .config > /var/starterkit/rancher/config
+echo $NODECOMMAND  >> /var/starterkit/rancher/installNode.sh
+echo $CLUSTERID > /var/starterkit/rancher/clusterid
+echo $APITOKEN > /var/starterkit/rancher/token
 sudo mkdir /root/.kube/
-sudo cp  /var/lidop/rancher/config /root/.kube/config
+sudo cp  /var/starterkit/rancher/config /root/.kube/config
