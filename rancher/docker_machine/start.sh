@@ -41,7 +41,7 @@ echo "################################################################"
 echo "Copy script folder"
 echo "################################################################"
 docker-machine ssh rancher1 "sudo mkdir -p /var/starterkit && sudo chmod 777 /var/starterkit"
-docker-machine scp -r ./rancher/scripts rancher1:/var/starterkit/ 
+docker-machine scp -r ./scripts rancher1:/var/starterkit/ 
 
 echo "################################################################"
 echo "Create Admin Tools"
@@ -67,7 +67,7 @@ echo "Copy rancher configs from server1 to local machine"
 docker-machine scp -r rancher1:/var/starterkit/rancher ./temp 
 
 echo "Create add Node Command"
-baseCommand=$(docker-machine ssh rancher1 cat /var/starterkit/rancher/installNode.sh)
+baseCommand=$(docker-machine ssh rancher1 cat /var/starterkit/installNode.sh)
 
 echo "Add Server1 to cluster"
 ip=$(docker-machine ip rancher1)
@@ -111,6 +111,6 @@ echo "Rancher is ready"
 echo "################################################################"
 echo "It can take some minutes, until the server is fully ready. Be patient."
 echo "Access rancher under: https://${ip}:444 with the user admin and the password ${admin_password}"
-echo "You can find the kubectl config under temp/rancher/config"
-echo "example how to use: kubectl --kubeconfig ./temp/rancher/config get nodes"
-echo "example how to use: helm --kubeconfig ./temp/rancher/config ls"
+echo "You can find the kubectl config under temp/config"
+echo "example how to use: kubectl --kubeconfig ./temp/config get nodes"
+echo "example how to use: helm --kubeconfig ./temp/config ls"
