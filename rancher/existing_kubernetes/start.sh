@@ -4,41 +4,48 @@
 # Configuration
 url="rancher.127.0.0.1.xip.io"
 password="admin"
+helm="docker run --rm -it -v $HOME/.helm:/root/.helm -v $HOME/.kube:/root/.kube starterkit-admin helm"
+kubectl="docker run --rm -it -v $HOME/.helm:/root/.helm -v $HOME/.kube:/root/.kube starterkit-admin kubectl"
+
 #############################################################################
+
+echo "###############################"
+echo "Create Admin container"
+echo "###############################"
+docker build -t starterkit-admin .
 
 echo "###############################"
 echo "Configure Helm"
 echo "###############################"
-kubectl -n kube-system create serviceaccount tiller
-kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
-helm init --service-account tiller --wait
+$kubectl -n kube-system create serviceaccount tiller
+$kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
+$helm init --service-account tiller --wait
 
 echo "###############################"
 echo "Configure Ingress"
 echo "###############################"
-helm install stable/nginx-ingress --name ingress-nginx --namespace ingress-nginx --wait
+$helm install stable/nginx-ingress --name ingress-nginx --namespace ingress-nginx --wait
 
 echo "###############################"
 echo "Configure Cert Manager"
 echo "###############################"
-kubectl apply -f "https://raw.githubusercontent.com/jetstack/cert-manager/release-0.9/deploy/manifests/00-crds.yaml"
-kubectl create namespace cert-manager
-kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
-helm repo add jetstack "https://charts.jetstack.io"
-helm repo update
-helm install --name cert-manager --namespace cert-manager --version v0.9.1 jetstack/cert-manager --wait
+$kubectl apply -f "https://raw.githubusercontent.com/jetstack/cert-manager/release-0.9/deploy/manifests/00-crds.yaml"
+$kubectl create namespace cert-manager
+$kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
+$helm repo add jetstack "https://charts.jetstack.io"
+$helm repo update
+$helm install --name cert-manager --namespace cert-manager --version v0.9.1 jetstack/cert-manager --wait
 
 echo "###############################"
 echo "Install Rancher"
 echo "###############################"
-helm repo add rancher-latest "https://releases.rancher.com/server-charts/latest"
-helm repo update
-helm install rancher-latest/rancher --name rancher --namespace cattle-system --set hostname=$url --wait
+$helm repo add rancher-latest "https://releases.rancher.com/server-charts/latest"
+$helm repo update
+$helm install rancher-latest/rancher --name rancher --namespace cattle-system --set hostname=$url --wait
 
 echo "###############################"
 echo "Configure Rancher"
 echo "###############################"
-docker build -t starterkit-admin .
 
 echo "wait until rancher server is started"
 while true; do
@@ -85,3 +92,4 @@ curl -s "https://${url}/v3/settings/server-url" \
     -X PUT \
     --data-binary '{"name":"server-url","value":"'https://${url}'"}' \
     --insecure
+
