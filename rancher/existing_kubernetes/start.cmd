@@ -29,13 +29,15 @@ if ERRORLEVEL 1 (
     set kubectl=docker run --rm -i -v %userprofile%/.kube/config:/root/.kube/config starterkit-tools kubectl
 )
 
+
+echo "###############################"
+echo "Get Host IP..."
+echo "###############################"
 for /f "tokens=3" %%a in ('ping host.docker.internal ^| find /i "reply"') do (
   set address=%%a
-  set address=!address:~0,-1!
+  set ipaddress=%address:~0,-1%
 )
-echo "###############################"
-echo "Host IP: %address%"
-echo "###############################"
+echo "Host IP: %ipaddress%"
 
 
 echo "###############################"
@@ -74,4 +76,4 @@ echo "###############################"
 echo "###############################"
 echo "Configure Rancher"
 echo "###############################"
-docker run --rm -i -v %cd%:/root --add-host=localhost:%address% starterkit-tools bash /root/configure.sh %password%
+docker run --rm -i -v %cd%:/root --add-host=localhost:%ipaddress% starterkit-tools bash /root/configure.sh %password%
