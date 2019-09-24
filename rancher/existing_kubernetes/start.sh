@@ -4,8 +4,8 @@
 # Configuration
 url="rancher.127.0.0.1.xip.io"
 password="admin"
-helm="docker run --rm -it -v $HOME/.helm:/root/.helm -v $HOME/.kube:/root/.kube starterkit-admin helm"
-kubectl="docker run --rm -it -v $HOME/.helm:/root/.helm -v $HOME/.kube:/root/.kube starterkit-admin kubectl"
+helm="docker run --rm -i -v $HOME/.helm:/root/.helm -v $HOME/.kube:/root/.kube starterkit-admin helm"
+kubectl="docker run --rm -i -v $HOME/.helm:/root/.helm -v $HOME/.kube:/root/.kube starterkit-admin kubectl"
 
 #############################################################################
 
