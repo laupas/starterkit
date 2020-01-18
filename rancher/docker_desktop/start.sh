@@ -2,10 +2,11 @@
 
 #############################################################################
 # Configuration
-url="rancher.127.0.0.1.xip.io"
+url="starterkit.devops.family"
+ssl=self
 password="admin"
-helm="docker run --rm -i -v $HOME/.helm:/root/.helm -v $HOME/.kube:/root/.kube starterkit-admin helm"
-kubectl="docker run --rm -i -v $HOME/.helm:/root/.helm -v $HOME/.kube:/root/.kube starterkit-admin kubectl"
+helm="docker run --rm -i -v $PWD:/home -v $HOME/.helm:/root/.helm -v $HOME/.kube:/root/.kube starterkit-admin helm"
+kubectl="docker run --rm -i -v $PWD:/home -v $HOME/.helm:/root/.helm -v $HOME/.kube:/root/.kube starterkit-admin kubectl"
 
 #############################################################################
 
@@ -15,33 +16,31 @@ echo "###############################"
 docker build -t starterkit-admin .
 
 echo "###############################"
-echo "Configure Helm"
-echo "###############################"
-$kubectl -n kube-system create serviceaccount tiller
-$kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
-$helm init --service-account tiller --wait
-
-echo "###############################"
 echo "Configure Ingress"
 echo "###############################"
-$helm install stable/nginx-ingress --name ingress-nginx --namespace ingress-nginx --wait
-
-echo "###############################"
-echo "Configure Cert Manager"
-echo "###############################"
-$kubectl apply -f "https://raw.githubusercontent.com/jetstack/cert-manager/release-0.9/deploy/manifests/00-crds.yaml"
-$kubectl create namespace cert-manager
-$kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
-$helm repo add jetstack "https://charts.jetstack.io"
-$helm repo update
-$helm install --name cert-manager --namespace cert-manager --version v0.9.1 jetstack/cert-manager --wait
+$kubectl create namespace ingress-nginx
+$kubectl -n ingress-nginx create secret tls ingress-default-cert \
+  --cert=/home/ssl/$ssl/server.crt \
+  --key=/home/ssl/$ssl/server.key
+$helm install ingress-nginx stable/nginx-ingress --namespace ingress-nginx --wait --set controller.extraArgs.default-ssl-certificate=ingress-nginx/ingress-default-cert
 
 echo "###############################"
 echo "Install Rancher"
 echo "###############################"
-$helm repo add rancher-latest "https://releases.rancher.com/server-charts/latest"
-$helm repo update
-$helm install rancher-latest/rancher --name rancher --namespace cattle-system --set hostname=$url --wait
+$kubectl create namespace cattle-system
+$kubectl -n cattle-system create secret tls tls-rancher-ingress \
+  --cert=/home/ssl/$ssl/server.crt \
+  --key=/home/ssl/$ssl/server.key
+
+$kubectl -n cattle-system create secret generic tls-ca \
+  --from-file=/home/ssl/$ssl/cacerts.pem
+
+$helm install rancher rancher-latest/rancher \
+  --namespace cattle-system \
+  --set hostname=$url \
+  --set privateCA=true \
+  --set ingress.tls.source=secret
+$kubectl -n cattle-system rollout status deploy/rancher
 
 echo "###############################"
 echo "Configure Rancher"

@@ -9,8 +9,10 @@ RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s 
     mv ./kubectl /usr/local/bin/
 
 # Install Helm
-RUN curl -LO https://git.io/get_helm.sh && \
-    chmod a+x get_helm.sh && \
+RUN curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3  && \
+    chmod 700 get_helm.sh && \
     ./get_helm.sh && \
-    helm init --client-only && \
+    helm repo add stable https://kubernetes-charts.storage.googleapis.com/  && \
+    helm repo add jetstack "https://charts.jetstack.io"  && \
+    helm repo add rancher-latest "https://releases.rancher.com/server-charts/latest"  && \
     helm repo update
