@@ -1,0 +1,16 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: jenkins.starterkit.devops.family
+  namespace: starterkit
+spec:
+
+  rules:
+  - host: jenkins.starterkit.devops.family
+    http:
+      paths:
+      - backend:
+          serviceName: jenkins
+          servicePort: http
+

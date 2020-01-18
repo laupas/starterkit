@@ -1,0 +1,39 @@
+---
+
+- name: Load Plugin
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+    body:
+      name: "{{ project_name | replace(' ', '_')}}"
+      private: true
+
+  tasks:
+    - name: set project_name
+      set_fact: project_name_without_spaces="{{ project_name | replace(' ', '_')}}"
+
+    - name: update build.json file
+      template:
+        src: ./build/builds.json
+        dest: ./build/builds.json
+
+    - name: load builds.json file
+      include_vars:
+        file: ./build/builds.json
+        name: pipelines
+
+    - name: update config files
+      template:
+        src: ./job_dsl
+        dest: ./build/builds.groovy
+
+    - name: read extension files
+      find:
+        paths:  "./build"
+        patterns: "*execute*.yml,*execute*.yaml"
+      register: includes_extension
+
+    - name: execute extension
+      include_tasks: "{{ item.path }}"
+      with_items: "{{ includes_extension.files | sort(attribute='path') }}" 
