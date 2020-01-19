@@ -323,7 +323,7 @@ master:
       starter_kit_load_plugin: |
         jobs:
           - script: >
-              pipelineJob('starterkit/load_plugin') {
+              pipelineJob('starterkit/Load_Plugin') {
                 parameters {
                     stringParam('Name', 'name', 'Name')
                     stringParam('PluginUrl', 'https://github.com/LivingDevOps/LiDOP.helloworld_nodejs.git', 'https://url.github.com')
@@ -352,8 +352,8 @@ master:
                           stage("Prepare Build Environment") {
                             steps{
                               script {
-                                currentBuild.displayName = "Test"
-                                currentBuild.description = "The best description."
+                                currentBuild.displayName = "Load Plugin ${params.Name}"
+                                currentBuild.description = ""
                               }
                             }
                           }
@@ -376,7 +376,7 @@ master:
                           stage("Step 1") {
                               steps{
                                 sh  label: 'ansible-playbook', 
-                                    script: "ansible-playbook /var/starterkit/loadPlugin/load_plugin.yaml -v -e 'workspace=^${WORKSPACE} project_name=^${params.NAME} credential=^${params.Credential} branch=^${params.BRANCH} plugin_url=^${params.PluginUrl}'"
+                                    script: "ansible-playbook /var/starterkit/loadPlugin/load_plugin.yaml -v -e 'workspace=^${WORKSPACE} project_name=^${params.Name} credential=^${params.Credential} branch=^${params.Branch} plugin_url=^${params.PluginUrl}'"
                               }
                           }
 
