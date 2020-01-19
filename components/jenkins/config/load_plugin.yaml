@@ -2,6 +2,7 @@
 
 - name: Load Plugin
   hosts: localhost
+  connection: local
   gather_facts: no
 
   vars:
@@ -15,25 +16,25 @@
 
     - name: update build.json file
       template:
-        src: ./build/builds.json
-        dest: ./build/builds.json
+        src: "{{ workspace }}/build/builds.json"
+        dest: "{{ workspace }}/build/builds.json"
 
     - name: load builds.json file
       include_vars:
-        file: ./build/builds.json
+        file: "{{ workspace }}/build/builds.json"
         name: pipelines
 
     - name: update config files
       template:
         src: ./job_dsl
-        dest: ./build/builds.groovy
+        dest: "{{ workspace }}/build/builds.groovy"
 
     - name: read extension files
       find:
-        paths:  "./build"
+        paths:  "{{ workspace }}/build"
         patterns: "*execute*.yml,*execute*.yaml"
       register: includes_extension
 
     - name: execute extension
       include_tasks: "{{ item.path }}"
-      with_items: "{{ includes_extension.files | sort(attribute='path') }}" 
+      with_items: "{{ includes_extension.files | sort(attribute='path') }}"

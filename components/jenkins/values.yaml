@@ -240,8 +240,12 @@ master:
     - workflow-aggregator:2.6
     - credentials-binding:1.20
     - git:4.0.0
+    - github:latest
     - ldap:latest
     - job-dsl:latest
+    - authorize-project:latest
+    - generic-webhook-trigger:latest
+    - webhook-step:latest
 
   # Enable to always override the installed plugins with the values of 'master.installPlugins' on upgrade or redeployment.
   # overwritePlugins: true
@@ -249,8 +253,14 @@ master:
   # The plugin is not installed by default, please update master.installPlugins.
   enableRawHtmlMarkupFormatter: false
   # Used to approve a list of groovy functions in pipelines used the script-security plugin. Can be viewed under /scriptApproval
-  scriptApproval: []
-  #  - "method groovy.json.JsonSlurperClassic parseText java.lang.String"
+  scriptApproval: 
+  - "method groovy.lang.GroovyObject invokeMethod java.lang.String java.lang.Object"
+  - "method groovy.json.JsonSlurperClassic parseText java.lang.String"
+  - "method groovy.json.JsonSlurper parse java.net.URL"
+  - "method hudson.model.Cause$RemoteCause getNote"
+  - "method hudson.model.Run getCause java.lang.Class"
+  - "method org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper getRawBuild"
+  - "new java.util.ArrayList"
   #  - "new groovy.json.JsonSlurperClassic"
   # List of groovy init scripts to be executed during Jenkins master start
   initScripts: []
@@ -286,6 +296,15 @@ master:
         jenkins:
           systemMessage: Welcome to the Starter-Kit Jenkins. Use the load plugin job to load plugins.
 
+      security: |
+        security:
+          globalJobDslSecurityConfiguration:
+            useScriptSecurity: true
+          queueItemAuthenticator:
+            authenticators:
+            - global:
+                strategy: "triggeringUsersAuthorizationStrategy"
+
       secret-1: |
         credentials:
           system:
@@ -306,10 +325,13 @@ master:
           - script: >
               pipelineJob('starterkit/load_plugin') {
                 parameters {
+                    stringParam('Name', 'name', 'Name')
                     stringParam('PluginUrl', 'https://github.com/LivingDevOps/LiDOP.helloworld_nodejs.git', 'https://url.github.com')
                     stringParam('Branch', 'master', 'Branch to load')
-                    booleanParam('FLAG', true)
-                    choiceParam('OPTION', ['option 1 (default)', 'option 2', 'option 3'])
+                    credentialsParam('Credential') {
+                      type('com.cloudbees.plugins.credentials.common.StandardCredentials')
+                      description('Credential needed to git clone')
+                    }
                 }
 
                 definition {
@@ -325,8 +347,8 @@ master:
                                 args '-v $WORKSPACE/:/work'
                             }
                         }
-                        stages {
 
+                        stages {
                           stage("Prepare Build Environment") {
                             steps{
                               script {
@@ -353,9 +375,8 @@ master:
 
                           stage("Step 1") {
                               steps{
-                                sh label: 'cat', script: 'cat /var/starterkit/loadPlugin/job_dsl'
                                 sh  label: 'ansible-playbook', 
-                                    script: "ansible-playbook /var/starterkit/loadPlugin/load_plugin -v -e 'project_name=${NAME} credential=${Credential} plugin_url=${params.PluginUrl}'"
+                                    script: "ansible-playbook /var/starterkit/loadPlugin/load_plugin.yaml -v -e 'workspace=^${WORKSPACE} project_name=^${params.NAME} credential=^${params.Credential} branch=^${params.BRANCH} plugin_url=^${params.PluginUrl}'"
                               }
                           }
 
@@ -373,12 +394,10 @@ master:
                 }
               }
 
-
-      
       starter_kit_load_plugin_2: |
         jobs:
           - script: >
-              job('starterkit/load_plugin_2') {
+              job('starterkit/test') {
                 parameters {
                     booleanParam('FLAG', true)
                     choiceParam('OPTION', ['option 1 (default)', 'option 2', 'option 3'])
@@ -399,11 +418,8 @@ master:
               docker run --rm -v $WORKSPACE:/work ubuntu ls /work
                   ''')
 
-
                 }
               }
-
-
 
   customInitContainers: []
   # - name: custom-init
