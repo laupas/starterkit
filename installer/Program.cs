@@ -26,7 +26,6 @@ namespace Installer
             {
                 try
                 {
-                    WriteLine("checkVolumes");
                     Run("kubectl", "get nodes");
                     try 
                     {
@@ -51,73 +50,57 @@ namespace Installer
 
             Target("installIngress", DependsOn("checkKubeclt"), () =>
             {
-                WriteLine("install Ingress");
-                if(!Kubernetes.CheckIfResourceExists("namespaces", "ingress-nginx"))
-                {
-                    WriteLine("Create Namespace ingress-nginx");
-                    Run("kubectl", "create namespace ingress-nginx");
-                }
+                Kubernetes.WriteHeader("Install Ingress");
 
-                if(!Kubernetes.CheckIfResourceExists("secret", "ingress-default-cert", "ingress-nginx"))
-                {
-                    WriteLine("Create ssl secret");
-                    Run("kubectl", "-n ingress-nginx create secret tls ingress-default-cert " +
-                                        $"--cert=./../ssl/{ssl}/server.crt " +
-                                        $"--key=./../ssl/{ssl}/server.key ");
-                }
+                Kubernetes.InstallResourceIfNotExists("ingress-nginx", "namespace");
                 
-                if (!Kubernetes.CheckIfApplicationExists("ingress-nginx", "ingress-nginx"))
-                {
-                    WriteLine("Install Ingress");
-                    Run("helm", "install ingress-nginx stable/nginx-ingress" +
-                                   " --namespace ingress-nginx " +
-                                    "--set controller.extraArgs.default-ssl-certificate=ingress-nginx/ingress-default-cert");
-                    
-                    Run("kubectl", "-n ingress-nginx rollout status deployment.apps/ingress-nginx-nginx-ingress-controller");
-                    Run("kubectl", "-n ingress-nginx rollout status deployment.apps/ingress-nginx-nginx-ingress-default-backend");
-                }
+                Kubernetes.InstallResourceIfNotExists(
+                    "ingress-default-cert", 
+                    "secret tls", 
+                    "ingress-nginx", 
+                    $"--cert=./../ssl/{ssl}/server.crt --key=./../ssl/{ssl}/server.key ");
+
+                Kubernetes.InstallApplicationeIfNotExists(
+                    "ingress-nginx", 
+                    "stable/nginx-ingress", 
+                    "ingress-nginx", 
+                    "--set controller.extraArgs.default-ssl-certificate=ingress-nginx/ingress-default-cert",
+                    "deployment.apps/ingress-nginx-nginx-ingress-controller",
+                    "deployment.apps/ingress-nginx-nginx-ingress-default-backend");
             });
             
             Target("installRancher", DependsOn("checkKubeclt"), () =>
             {
-                WriteLine("install Rancher");
-                if(!Kubernetes.CheckIfResourceExists("namespaces", "cattle-system"))
-                {
-                    WriteLine("Create Namespace cattle-system");
-                    Run("kubectl", "create namespace cattle-system");
-                }
+                Kubernetes.WriteHeader("Install Rancher");
                 
-                if(!Kubernetes.CheckIfResourceExists("secret", "tls-rancher-ingress", "cattle-system"))
-                {
-                    WriteLine("Create ssl secret");
-                    Run("kubectl", "-n cattle-system create secret tls tls-rancher-ingress " +
-                                   $"--cert=./../ssl/{ssl}/server.crt " +
-                                   $"--key=./../ssl/{ssl}/server.key ");
-                }
+                Kubernetes.InstallResourceIfNotExists("cattle-system", "namespace");
+                
+                Kubernetes.InstallResourceIfNotExists(
+                    "tls-rancher-ingress", 
+                    "secret tls", 
+                    "cattle-system",
+                    $"--cert=./../ssl/{ssl}/server.crt --key=./../ssl/{ssl}/server.key ");
 
-                if(!Kubernetes.CheckIfResourceExists("secret", "tls-ca", "cattle-system"))
-                {
-                    WriteLine("Create generic secret");
-                    Run("kubectl", "-n cattle-system create secret generic tls-ca " +
-                                   $"--from-file=./../ssl/{ssl}/cacerts.pem ");
-                }
+                Kubernetes.InstallResourceIfNotExists(
+                    "tls-ca", 
+                    "secret generic", 
+                    "cattle-system",
+                    $"--from-file=./../ssl/{ssl}/cacerts.pem");
+                
+                Kubernetes.InstallApplicationeIfNotExists(
+                    "rancher", 
+                    "rancher-latest/rancher", 
+                    "cattle-system", 
+                    $"--set hostname={ rancherUrl } " +
+                    "--set privateCA=true " +
+                    "--set ingress.tls.source=secret",
+                    "deploy/rancher");
 
-                if (!Kubernetes.CheckIfApplicationExists("rancher", "cattle-system"))
-                {
-                    WriteLine("Install Rancher");
-                    Run("helm", "install rancher rancher-latest/rancher " +
-                                "--namespace cattle-system " +
-                                $"--set hostname={ rancherUrl } " +
-                                "--set privateCA=true " +
-                                "--set ingress.tls.source=secret");
-                    
-                    Run("kubectl", "-n cattle-system rollout status deploy/rancher");
-                }
             });
             
             Target("configureRancher", DependsOn("checkKubeclt"), () =>
             {
-                WriteLine("Configure Rancher");
+                Kubernetes.WriteHeader("Configure Rancher");
                 var client = new RestClient($"https://{rancherUrl}");
 
                 Rancher.WaitUntilIsUpAndReady(client);
@@ -128,50 +111,38 @@ namespace Installer
 
             Target("installStarterKit", DependsOn("checkKubeclt"), () =>
             {
-                WriteLine("Install Starterkit");
-                if(!Kubernetes.CheckIfResourceExists("namespaces", "starterkit"))
-                {
-                    WriteLine("Create Namespace starterkit");
-                    Run("kubectl", "create namespace starterkit");
-                }
+                Kubernetes.WriteHeader("Install Starterkit");
+
+                Kubernetes.InstallResourceIfNotExists("starterkit", "namespace");
                 
                 Run("kubectl", "apply -f ./../components/common/cert.yaml");
 
-                if (!Kubernetes.CheckIfApplicationExists("ldap", "starterkit"))
-                {
-                    WriteLine("Install Ingress");
-                    Run("helm", "install ldap stable/openldap" +
-                                " --namespace starterkit " +
-                                "-f ./../components/openldap/values.yaml");
-                    
-                    Run("kubectl", "-n starterkit rollout status deploy/ldap-openldap");
-                }
+                Kubernetes.InstallApplicationeIfNotExists(
+                    "ldap", 
+                    "stable/openldap", 
+                    "starterkit", 
+                    $"-f ./../components/openldap/values.yaml",
+                    "deploy/ldap-openldap");
 
-                if (!Kubernetes.CheckIfApplicationExists("ldap-ui", "starterkit"))
-                {
-                    WriteLine("Install ldap-ui");
-                    Run("helm", "install ldap-ui" +
-                                " --namespace starterkit " +
-                                "./../components/openldapui");
-                    
-                    Run("kubectl", "-n starterkit rollout status deploy/ldap-ui-openldapui");
-                }
-                
-                if(!Kubernetes.CheckIfResourceExists("configmap", "starterkit", "starterkit"))
-                {
-                    WriteLine("Create configmap starterkit");
-                    Run("kubectl", "create configmap starterkit --namespace starterkit --from-file=./../components/jenkins/config");
-                }
+                Kubernetes.InstallApplicationeIfNotExists(
+                    "ldap-ui", 
+                    "", 
+                    "starterkit", 
+                    $"./../components/openldapui",
+                    "deploy/ldap-ui-openldapui");
 
-                if (!Kubernetes.CheckIfApplicationExists("jenkins", "starterkit"))
-                {
-                    WriteLine("Install ldap-ui");
-                    Run("helm", "install jenkins --namespace starterkit stable/jenkins " +
-                                $"-f ./../components/jenkins/values.yaml --set master.ingress.hostName=jenkins.{rancherUrl}");
-                    
-                    Run("kubectl", "-n starterkit rollout status deploy/jenkins");
-                }
+                Kubernetes.InstallResourceIfNotExists(
+                    "starterkit", 
+                    "configmap", 
+                    "starterkit", 
+                    "--from-file=./../components/jenkins/config");
 
+                Kubernetes.InstallApplicationeIfNotExists(
+                    "jenkins", 
+                    "stable/jenkins", 
+                    "starterkit", 
+                    $"-f ./../components/jenkins/values.yaml --set master.ingress.hostName=jenkins.{rancherUrl}",
+                    "deploy/jenkins");
                 
             });
 
