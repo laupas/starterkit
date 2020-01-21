@@ -20,14 +20,7 @@ namespace installer
                 Run("kubectl", $"create {resourceType} {name} {arguments} {nameSpaceCommand}");
             }
         }
-
-        public static void WriteHeader(string name)
-        {
-            WriteLine("####################################");
-            WriteLine(name);
-            WriteLine("####################################");
-        }
-
+        
         public static void InstallApplicationeIfNotExists(string name, string repo, string nameSpace = null, string arguments = null, params string[] checkRollout)
         {
             var nameSpaceCommand = CreateNameSpaceCommand(nameSpace);

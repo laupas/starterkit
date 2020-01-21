@@ -20,7 +20,7 @@ namespace installer
             setServerUrlRequest.AddJsonBody(JObject.FromObject(new
             {
                 name = "server-url",
-                value = $"'{rancherUrl}'"
+                value = $"{rancherUrl}"
             }).ToString());
 
             var setServerUrlResult = client.Put(setServerUrlRequest);
