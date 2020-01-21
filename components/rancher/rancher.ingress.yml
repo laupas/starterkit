@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: rancher-starterkit
+  namespace: cattle-system
+spec:
+  rules:
+  - host: starterkit.devops.family
+    http:
+      paths:
+      - backend:
+          serviceName: rancher
+          servicePort: 80
+  tls:
+  - hosts:
+    - starterkit.devops.family
+    secretName: tls-rancher-ingress
