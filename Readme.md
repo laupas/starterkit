@@ -1,5 +1,10 @@
 # Installation
 
+## Prerequisites
+
+1. Docker Desktop to be installed
+2. Kubernetes activated in Docker Desktop preferences
+
 ## Run starterkit on Mac
 
 1. Enable Kubernetes in Docker Desktop (Docker Desktop preferences)
