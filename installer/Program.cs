@@ -22,8 +22,8 @@ namespace Installer
             ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
             var options = SetOptions(args);
             DefineTargets(options);
-            rancherUrl = $"{options.Dns}";
-            rancherInternalUrl = $"{options.Dns}";
+            rancherUrl = "starterkit.devops.family";
+            rancherInternalUrl = GetRancherInternalUrl(options);
             var targets = DefineTargetsToBeExecuted(options);
             if(targets != null)
             {
@@ -109,6 +109,7 @@ namespace Installer
                     Run("bash", "install.sh");
                 }
             });
+            
             Target("checkKubeclt", () =>
             {
                 try
@@ -133,6 +134,7 @@ namespace Installer
                     throw;
                 }
             });
+            
             Target("installIngress", DependsOn("checkKubeclt"), () =>
             {
                 WriteHeader("Install Ingress");
@@ -185,6 +187,7 @@ namespace Installer
                 Rancher.ChangePassword(client, token);
                 Rancher.SetServerUrl(client, rancherInternalUrl);
             });
+            
             Target("installStarterKit", DependsOn("checkKubeclt"), () =>
             {
                 WriteHeader("Install Starterkit");
@@ -217,16 +220,16 @@ namespace Installer
         }
         private static string GetRancherInternalUrl(Options options)
         {
-            if(! string.IsNullOrEmpty(options.Dns))
-            {
-                System.Console.WriteLine($"Using {options.Dns} as base url");
-                return options.Dns;
-            }
-            else
-            {
+            // if(! string.IsNullOrEmpty(options.Dns))
+            // {
+            //     System.Console.WriteLine($"Using {options.Dns} as base url");
+            //     return options.Dns;
+            // }
+            // else
+            // {
                 var list = new List<string>();
-                list.Add("10.0.75.1");
                 list.Add("192.168.65.1");
+                // list.Add("10.0.75.1");
                 foreach (var ip in list)
                 {
                     System.Console.WriteLine($"Try to ping {ip}");
@@ -240,7 +243,7 @@ namespace Installer
                     }
                     
                 }
-            }
+            // }
                 
             throw new Exception("Script was not able to find a ip to be used. Please set it manually with the --dns flag");
         }
