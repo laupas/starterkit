@@ -228,7 +228,7 @@ namespace Installer
             // else
             // {
                 var list = new List<string>();
-                list.Add("192.168.65.1");
+                list.Add("dockerinternal.devops.family");
                 // list.Add("10.0.75.1");
                 foreach (var ip in list)
                 {
@@ -237,9 +237,8 @@ namespace Installer
                     var result = ping.Send(ip);
                     if(result.Status == IPStatus.Success)
                     {
-                        var url = $"starterkit.{result.Address}.{options.DynamicDns}";
-                        System.Console.WriteLine($"Using {url} as base url");
-                        return url;
+                        System.Console.WriteLine($"Using {ip} as base url");
+                        return ip;
                     }
                     
                 }
