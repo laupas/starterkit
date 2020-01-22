@@ -17,7 +17,7 @@ namespace Installer
         public bool? InstallRancher { get; set; }
         [Option("install-starterkit", Required = false, HelpText = "If true, Starterkit Applications will be installed on the defined Kubernetes Server", Default = true)]
         public bool InstallStarterKit { get; set; }
-        [Option("dynamic-dns", Required = false, HelpText = "Which dynamic DNS Server should be used.", Default = "xip.io")]
+        [Option("dynamic-dns", Required = false, HelpText = "Which dynamic DNS Server should be used.", Default = "nip.io")]
         public string DynamicDns { get; set; }
     }
 }
