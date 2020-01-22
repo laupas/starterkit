@@ -14,7 +14,6 @@ namespace Installer
 {
     static class Program
     {
-        private static string rancherInternalUrl;
         private static string rancherUrl;
 
         static void Main(string[] args)
@@ -23,7 +22,7 @@ namespace Installer
             var options = SetOptions(args);
             DefineTargets(options);
             rancherUrl = "starterkit.devops.family";
-            rancherInternalUrl = GetRancherInternalUrl(options);
+            // rancherInternalUrl = GetRancherInternalUrl(options);
             var targets = DefineTargetsToBeExecuted(options);
             if(targets != null)
             {
@@ -74,12 +73,17 @@ namespace Installer
             {
                 targets.Add("installIngress");
                 targets.Add("installRancher");
-                targets.Add("configureRancher");
+                targets.Add("configureRancher-step-1");
             }
             
             if(options.InstallStarterKit)
             {
                 targets.Add("installStarterKit");
+            }
+
+            if(options.InstallRancher == true)
+            {
+                targets.Add("configureRancher-step-2");
             }
             
             targets.AddRange(options.Tasks);
@@ -89,10 +93,7 @@ namespace Installer
         private static void DefineTargets(Options options)
         {
             var ssl = "self";
-            Target(
-                "default", 
-                DependsOn("checkKubeclt", "installIngress", "installRancher", "configureRancher", "installStarterKit"), 
-                () => { WriteLine($"default "); });
+            string token = null;
 
             Target("installCertificates",  () =>
             {
@@ -119,8 +120,8 @@ namespace Installer
                     {
                         var hostAddress = Dns.GetHostEntry("host.docker.internal").AddressList.First().ToString();
                         WriteLine("Running inside Docker");
-                        WriteLine($"Add {hostAddress} {rancherInternalUrl} to host");
-                        File.AppendAllText("/etc/hosts", $"{hostAddress} {rancherInternalUrl}{Environment.NewLine}");
+                        WriteLine($"Add {hostAddress} {rancherUrl} to host");
+                        File.AppendAllText("/etc/hosts", $"{hostAddress} {rancherUrl}{Environment.NewLine}");
                     }
                     catch
                     {
@@ -171,21 +172,24 @@ namespace Installer
                     "rancher",
                     "rancher-latest/rancher",
                     "cattle-system",
-                    $"--set hostname={rancherInternalUrl} " +
+                    $"--set hostname={rancherUrl} " +
                     "--set privateCA=true " +
+                    "--set 'extraEnv[0].name=CATTLE_CA_CHECKSUM' " +
+                    "--set 'extraEnv[0].value=' " +
                     "--set ingress.tls.source=secret",
                     "deploy/rancher");
                 Run("kubectl", "apply -f ./../components/rancher/rancher.ingress.yml");
             });
             
-            Target("configureRancher", DependsOn("checkKubeclt"), () =>
+            Target("configureRancher-step-1", DependsOn("checkKubeclt"), () =>
             {
                 WriteHeader("Configure Rancher");
-                var client = new RestClient($"https://{rancherInternalUrl}");
+                var client = new RestClient($"https://{rancherUrl}");
                 Rancher.WaitUntilIsUpAndReady(client);
-                var token = Rancher.Login(client);
+                token = Rancher.Login(client);
+                client.AddDefaultHeader("Authorization", $"Bearer {token}");
                 Rancher.ChangePassword(client, token);
-                Rancher.SetServerUrl(client, rancherInternalUrl);
+                Rancher.SetServerUrl(client, rancherUrl);
             });
             
             Target("installStarterKit", DependsOn("checkKubeclt"), () =>
@@ -217,35 +221,45 @@ namespace Installer
                     $"-f ./../components/jenkins/values.yaml --set master.ingress.hostName=jenkins.{rancherUrl}",
                     "deploy/jenkins");
             });
+
+            Target("configureRancher-step-2", DependsOn("checkKubeclt"), () =>
+            {
+                WriteHeader("Configure Rancher step 2");
+                var client = new RestClient($"https://{rancherUrl}");
+                client.AddDefaultHeader("Authorization", $"Bearer {token}");
+                Rancher.WaitUntilIsActive(client);
+                Rancher.ExecuteUpdatesForDockerDesktop();
+            });
+
         }
-        private static string GetRancherInternalUrl(Options options)
-        {
-            // if(! string.IsNullOrEmpty(options.Dns))
-            // {
-            //     System.Console.WriteLine($"Using {options.Dns} as base url");
-            //     return options.Dns;
-            // }
-            // else
-            // {
-                var list = new List<string>();
-                list.Add("dockerinternal.devops.family");
-                // list.Add("10.0.75.1");
-                foreach (var ip in list)
-                {
-                    System.Console.WriteLine($"Try to ping {ip}");
-                    var ping = new Ping();
-                    var result = ping.Send(ip);
-                    if(result.Status == IPStatus.Success)
-                    {
-                        System.Console.WriteLine($"Using {ip} as base url");
-                        return ip;
-                    }
+        // private static string GetRancherInternalUrl(Options options)
+        // {
+        //     // if(! string.IsNullOrEmpty(options.Dns))
+        //     // {
+        //     //     System.Console.WriteLine($"Using {options.Dns} as base url");
+        //     //     return options.Dns;
+        //     // }
+        //     // else
+        //     // {
+        //         var list = new List<string>();
+        //         list.Add("dockerinternal.devops.family");
+        //         // list.Add("10.0.75.1");
+        //         foreach (var ip in list)
+        //         {
+        //             System.Console.WriteLine($"Try to ping {ip}");
+        //             var ping = new Ping();
+        //             var result = ping.Send(ip);
+        //             if(result.Status == IPStatus.Success)
+        //             {
+        //                 System.Console.WriteLine($"Using {ip} as base url");
+        //                 return ip;
+        //             }
                     
-                }
-            // }
+        //         }
+        //     // }
                 
-            throw new Exception("Script was not able to find a ip to be used. Please set it manually with the --dns flag");
-        }
+        //     throw new Exception("Script was not able to find a ip to be used. Please set it manually with the --dns flag");
+        // }
         
         public static void WriteHeader(string name)
         {
