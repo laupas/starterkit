@@ -23,7 +23,7 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: ldap.starterkit.devops.family
+    - host: undev
       paths: ["/"]
 
   tls: []

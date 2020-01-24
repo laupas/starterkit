@@ -12,7 +12,7 @@
 3. Run the following command in the terminal:
 
 `````
-docker run --rm -it -v $HOME/.kube:/root/.kube devopsfamily/starterkit.installer
+docker run --rm -it -v $HOME/.kube:/root/.kube devopsfamily/starterkit.installer --install-rancher --install-starterkit
 `````
 
 ## Install starterkit on Windows
@@ -23,12 +23,12 @@ docker run --rm -it -v $HOME/.kube:/root/.kube devopsfamily/starterkit.installer
 
 `````
 #in CMD
-docker run --rm -it -v %homepath%/.kube:/root/.kube devopsfamily/starterkit.installer
+docker run --rm -it -v %homepath%/.kube:/root/.kube devopsfamily/starterkit.installer --install-rancher --install-starterkit
 `````
 
 `````
 #in Powershell
-docker run --rm -it -v $HOME/.kube:/root/.kube devopsfamily/starterkit.installer
+docker run --rm -it -v $HOME/.kube:/root/.kube devopsfamily/starterkit.installer --install-rancher --install-starterkit
 `````
 
 ## Use starterkit

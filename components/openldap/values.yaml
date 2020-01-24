@@ -64,8 +64,8 @@ env:
 # Default Passwords to use, stored as a secret. If unset, passwords are auto-generated.
 # You can override these at install time with
 # helm install openldap --set openldap.adminPassword=<passwd>,openldap.configPassword=<passwd>
-adminPassword: admin
-configPassword: admin
+adminPassword: undef
+configPassword: undef
 
 # Custom openldap configuration files used to override default settings
 customLdifFiles:
@@ -103,7 +103,6 @@ customLdifFiles:
     uid: devops
     uidnumber: 1000
     userpassword: {MD5}ohwhjfQfbX/QMlNf4gOU4g==
-
 
 
 ## Persist data to a persistent volume
