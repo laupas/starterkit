@@ -8,13 +8,15 @@ namespace installer.Targets
     public abstract class TargetsBase
     {
         protected Options Options { get; }
+        protected IProcessHelper ProcessHelper { get; }
         protected KubernetesHelper KubernetesHelper { get; }
         protected RancherHelper RancherHelper { get; }
         protected ILogger Logger { get; }
 
-        protected TargetsBase(ILoggerFactory loggerFactory, Options options, KubernetesHelper kubernetesHelper, RancherHelper rancherHelper)
+        protected TargetsBase(ILoggerFactory loggerFactory, Options options, IProcessHelper processHelper, KubernetesHelper kubernetesHelper, RancherHelper rancherHelper)
         {
             this.Options = options;
+            this.ProcessHelper = processHelper;
             this.KubernetesHelper = kubernetesHelper;
             this.RancherHelper = rancherHelper;
             this.Logger = loggerFactory.CreateLogger(this.GetType().Name);

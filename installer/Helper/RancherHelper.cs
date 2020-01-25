@@ -80,11 +80,6 @@ namespace Installer.Helper
 
         public void SetServerUrl(RestClient client, string rancherUrl)
         {
-            // // var rancherUrl = Read("kubectl", "get services -n cattle-system -o=json | jq .items[0].spec.clusterIP -r");
-            // var jsonString = Read("kubectl", "get services -n cattle-system -o=json");
-            // dynamic json = JsonConvert.DeserializeObject(jsonString);
-            // var rancherUrl = json.items[0].spec.clusterIP;
-
             this.logger.LogInformation("Set Server-Url...");
             var setServerUrlRequest = new RestRequest("/v3/settings/server-url")
             {
@@ -129,10 +124,8 @@ namespace Installer.Helper
             var serviceIp = serviceIpJson.items[0].spec.clusterIP.Value;
 
             this.processHelper.Run("kubectl", $"set env deployments/cattle-cluster-agent CATTLE_CA_CHECKSUM- CATTLE_SERVER={serviceIp} -n cattle-system");
-            // Run("kubectl", $"set env deployments/cattle-cluster-agent CATTLE_SERVER={serviceIp}  -n cattle-system");
 
             this.processHelper.Run("kubectl", $"set env daemonset/cattle-node-agent CATTLE_CA_CHECKSUM- CATTLE_SERVER={serviceIp} -n cattle-system)  -n cattle-system");
-            // Run("kubectl", $"set env daemonset/cattle-node-agent CATTLE_SERVER={serviceIp} -n cattle-system)  -n cattle-system");
             this.logger.LogInformation("Done");
         }
     }

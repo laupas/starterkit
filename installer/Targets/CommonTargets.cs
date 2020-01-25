@@ -6,13 +6,12 @@ using System.Net;
 using Installer;
 using Installer.Helper;
 using Microsoft.Extensions.Logging;
-using SimpleExec;
 
 namespace installer.Targets
 {
     public class CommonTargets : TargetsBase
     {
-        public CommonTargets(ILoggerFactory loggerFactory, Options options, KubernetesHelper kubernetesHelper, RancherHelper rancherHelper) : base(loggerFactory, options, kubernetesHelper, rancherHelper)
+        public CommonTargets(ILoggerFactory loggerFactory, Options options, IProcessHelper processHelper, KubernetesHelper kubernetesHelper, RancherHelper rancherHelper) : base(loggerFactory, options, processHelper, kubernetesHelper, rancherHelper)
         {
         }
 
@@ -46,7 +45,7 @@ namespace installer.Targets
                     File.WriteAllText("install.sh",
                         $"openssl s_client -showcerts -verify 5 -connect " + url +
                         ":443 < /dev/null | awk '/BEGIN/,/END/{ if(/BEGIN/){a++}; out=\"cert\"a\".crt\"; print >out}' && for cert in *.crt; do newname=$(openssl x509 -noout -subject -in $cert | sed -n 's/^.*CN=\\(.*\\)$/\\1/; s/[ ,.*]/_/g; s/__/_/g; s/^_//g;p').crt; mv $cert /usr/local/share/ca-certificates/$newname; done && update-ca-certificates");
-                    Command.Run("bash", "install.sh");
+                    this.ProcessHelper.Run("bash", "install.sh");
                 }
             });
             
@@ -54,7 +53,7 @@ namespace installer.Targets
             {
                 try
                 {
-                    Command.Run("kubectl", "get nodes");
+                    this.ProcessHelper.Run("kubectl", "get nodes");
                     try
                     {
                         var hostAddress = Dns.GetHostEntry("host.docker.internal").AddressList.First().ToString();

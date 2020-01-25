@@ -8,7 +8,7 @@ namespace installer.Targets
 {
     public class RancherTargets : TargetsBase
     {
-        public RancherTargets(ILoggerFactory loggerFactory, Options options, KubernetesHelper kubernetesHelper, RancherHelper rancherHelper) : base(loggerFactory, options, kubernetesHelper, rancherHelper)
+        public RancherTargets(ILoggerFactory loggerFactory, Options options, IProcessHelper processHelper, KubernetesHelper kubernetesHelper, RancherHelper rancherHelper) : base(loggerFactory, options, processHelper, kubernetesHelper, rancherHelper)
         {
         }
 
