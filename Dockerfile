@@ -14,13 +14,15 @@ RUN helm repo add stable https://kubernetes-charts.storage.googleapis.com/  && \
     helm repo add jetstack "https://charts.jetstack.io"  && \
     helm repo add rancher-latest "https://releases.rancher.com/server-charts/latest"  && \
     helm repo update
-RUN apk add --no-cache openssl
+
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS build
+COPY . /app
+
 WORKDIR /app
-COPY ./installer /app/installer
+RUN dotnet restore
+RUN dotnet test
 
 WORKDIR /app/installer
-RUN dotnet restore
 RUN dotnet publish  -c Release -o /app/installer/out
 
 FROM run

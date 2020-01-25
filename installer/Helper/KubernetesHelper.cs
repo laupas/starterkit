@@ -1,9 +1,8 @@
 using System;
 using System.Linq;
-using installer.Helper;
 using Microsoft.Extensions.Logging;
 
-namespace installer
+namespace Installer.Helper
 {
     public class KubernetesHelper
     {
@@ -17,9 +16,9 @@ namespace installer
         }
         public void InstallResourceIfNotExists(string name, string resourceType, string nameSpace = null, string arguments = null)
         {
-            var nameSpaceCommand = CreateNameSpaceCommand(nameSpace);
+            var nameSpaceCommand = this.CreateNameSpaceCommand(nameSpace);
 
-            if (!CheckIfResourceExists(resourceType.Split(' ').First(), name, nameSpace))
+            if (!this.CheckIfResourceExists(resourceType.Split(' ').First(), name, nameSpace))
             {
                 this.logger.LogInformation($"Create {resourceType} {name}");
                 this.processHelper.Run("kubectl", $"create {resourceType} {name} {arguments} {nameSpaceCommand}");
@@ -28,9 +27,9 @@ namespace installer
         
         public void InstallApplicationeIfNotExists(string name, string repo, string nameSpace = null, string arguments = null, params string[] checkRollout)
         {
-            var nameSpaceCommand = CreateNameSpaceCommand(nameSpace);
+            var nameSpaceCommand = this.CreateNameSpaceCommand(nameSpace);
 
-            if (!CheckIfApplicationExists(name, nameSpace))
+            if (!this.CheckIfApplicationExists(name, nameSpace))
             {
                 this.logger.LogInformation($"Create {name} {repo}");
                 this.processHelper.Run("helm", $"install {name} {repo} {arguments} {nameSpaceCommand}");
@@ -39,10 +38,19 @@ namespace installer
                         
                         this.processHelper.Run("kubectl", $"rollout status {check} {nameSpaceCommand}");
                 });
-                
             }
         }
 
+        public void UnInstallApplicationeIfExists(string name, string nameSpace = null)
+        {
+            var nameSpaceCommand = this.CreateNameSpaceCommand(nameSpace);
+
+            if (this.CheckIfApplicationExists(name, nameSpace))
+            {
+                this.logger.LogInformation($"Uninstall {name}");
+                this.processHelper.Run("helm", $"uninstall {name}  {nameSpaceCommand}");
+            }
+        }
         private string CreateNameSpaceCommand(string nameSpace)
         {
             var nameSpaceCommand = String.Empty;
@@ -56,7 +64,7 @@ namespace installer
 
         private bool CheckIfResourceExists(string resourceType, string name, string nameSpace = null)
         {
-            var nameSpaceCommand = CreateNameSpaceCommand(nameSpace);
+            var nameSpaceCommand = this.CreateNameSpaceCommand(nameSpace);
             var namespaces = this.processHelper.Read("kubectl", $"{nameSpaceCommand} get {resourceType}", noEcho: true);
             if(namespaces.Contains(name))
             {
@@ -68,7 +76,7 @@ namespace installer
 
         private bool CheckIfApplicationExists(string name, string nameSpace = null)
         {
-            var nameSpaceCommand = CreateNameSpaceCommand(nameSpace);
+            var nameSpaceCommand = this.CreateNameSpaceCommand(nameSpace);
             var namespaces = this.processHelper.Read("helm", $"list {nameSpaceCommand}", noEcho: true);
             if(namespaces.Contains(name))
             {

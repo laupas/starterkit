@@ -1,13 +1,12 @@
 using System;
 using System.Net;
 using System.Threading;
-using installer.Helper;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
 
-namespace installer
+namespace Installer.Helper
 {
     public class RancherHelper
     {

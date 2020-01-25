@@ -1,4 +1,6 @@
 ﻿using System.Net;
+using System.Runtime.CompilerServices;
+using installer.Helper;
 
 namespace Installer
 {
