@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CommandLine;
@@ -9,9 +8,6 @@ namespace Installer
 {
     public class Options
     {
-        [Option("task-overwrite", Required = false, HelpText = "If set, this tasks will be executed. !!!Some other options will be ignored. (task1 task2 taskn)")]
-        public IEnumerable<string> Tasks { get; set; }
-        
         [Option('v', "verbose", Required = false, HelpText = "Set output to verbose messages.")]
         public bool Verbose { get; set; }
 
@@ -20,7 +16,10 @@ namespace Installer
 
         [Option('d', "dns", Required = false, HelpText = "Set DNS Name to be used.", Default = "starterkit.devops.family")]
         public string Dns { get; set; }
-        
+
+        [Option("filter", Required = false, HelpText = "If set, the defined tasks will be filtered and not all tasks will be executed. (task1 task2 taskn)")]
+        public string Filter { get; set; }
+
         [Option("install-root-certificates", Required = false, HelpText = "Will reinstall the Certification chain for the used helm repos.")]
         public bool InstallRootCertificates { get; set; }
 
@@ -47,7 +46,6 @@ namespace Installer
             logger.LogInformation($"InstallRancher:    {this.InstallRancher}");
             logger.LogInformation($"InstallStarterKit: {this.InstallStarterKit}");
             logger.LogInformation($"SslHack:           {this.InstallRootCertificates}");
-            logger.LogInformation($"Tasks overwrite:   {String.Join(' ', this.Tasks)}");
             logger.LogInformation($"CurrentDirectory:  {Directory.GetCurrentDirectory()}");
         }
         

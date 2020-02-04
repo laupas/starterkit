@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Installer.Helper
 {
-    public class CustomLoggerProvider : ILoggerProvider
+    internal class CustomLoggerProvider : ILoggerProvider
     {
         public void Dispose() { }
 

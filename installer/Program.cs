@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Runtime.CompilerServices;
 using installer.Helper;
 
 namespace Installer
@@ -10,7 +9,7 @@ namespace Installer
         {
             ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
             Starter.Build(args);
-            Starter.Get<Installer>().Install();
+            Starter.Get<installer.Helper.Installer>().Install();
         }
     }
 }
