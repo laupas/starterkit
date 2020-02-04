@@ -1,7 +1,6 @@
 using System;
 using Installer;
 using Installer.Helper;
-using installer.Targets;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -31,12 +30,11 @@ namespace installer.Helper
                 );
                 
                 serviceCollection.AddTransient<IProcessHelper, ProcessHelper>();
-                serviceCollection.AddSingleton<Installer.Installer>();
-                serviceCollection.AddSingleton<CommonTargets>();
-                serviceCollection.AddSingleton<RancherTargets>();
-                serviceCollection.AddSingleton<StarterkitTargets>();
-                serviceCollection.AddSingleton<RancherHelper>();
-                serviceCollection.AddSingleton<KubernetesHelper>();
+                serviceCollection.AddSingleton<Installer>();
+                serviceCollection.AddSingleton<ITargetsBase, CommonTargets>();
+                serviceCollection.AddSingleton<ITargetsBase, RancherTargets>();
+                serviceCollection.AddSingleton<ITargetsBase, StarterkitTargets>();
+                serviceCollection.AddSingleton<IKubernetesHelper, KubernetesHelper>();
                 serviceCollection.AddSingleton(options);
                 serviceProvider = serviceCollection.BuildServiceProvider();
             }

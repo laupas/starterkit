@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Installer.Helper
 {
-    public class KubernetesHelper
+    internal class KubernetesHelper : IKubernetesHelper
     {
         private readonly IProcessHelper processHelper;
         private readonly ILogger logger;
@@ -51,7 +51,8 @@ namespace Installer.Helper
                 this.processHelper.Run("helm", $"uninstall {name}  {nameSpaceCommand}");
             }
         }
-        private string CreateNameSpaceCommand(string nameSpace)
+
+        public string CreateNameSpaceCommand(string nameSpace)
         {
             var nameSpaceCommand = String.Empty;
             if (!String.IsNullOrEmpty(nameSpace))
@@ -62,7 +63,7 @@ namespace Installer.Helper
             return nameSpaceCommand;
         }
 
-        private bool CheckIfResourceExists(string resourceType, string name, string nameSpace = null)
+        public bool CheckIfResourceExists(string resourceType, string name, string nameSpace = null)
         {
             var nameSpaceCommand = this.CreateNameSpaceCommand(nameSpace);
             var namespaces = this.processHelper.Read("kubectl", $"{nameSpaceCommand} get {resourceType}", noEcho: true);
@@ -74,7 +75,7 @@ namespace Installer.Helper
             return false;
         }
 
-        private bool CheckIfApplicationExists(string name, string nameSpace = null)
+        public bool CheckIfApplicationExists(string name, string nameSpace = null)
         {
             var nameSpaceCommand = this.CreateNameSpaceCommand(nameSpace);
             var namespaces = this.processHelper.Read("helm", $"list {nameSpaceCommand}", noEcho: true);

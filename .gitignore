@@ -1,5 +1,9 @@
 .*
-
+**/*.crt
 !.gitignore
 **/bin/**
 **/obj/**
+
+**/TestResults/**
+
+!.*
