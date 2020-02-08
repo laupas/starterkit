@@ -1,0 +1,12 @@
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = *.devops.family
+DNS.2 = *.starterkit.devops.family
+DNS.3 = *.test.devops.family
+DNS.4 = *.demo.devops.family
+DNS.5 = *.xip.io
+DNS.6 = *.nip.io
+

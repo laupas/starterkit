@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "installer", "installer\installer.csproj", "{95F30899-E408-4634-9DB5-34E2BF681617}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "installer.tests", "installer.tests\installer.tests.csproj", "{8A3F116A-1A56-47B7-A090-A65A485CDFCB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{95F30899-E408-4634-9DB5-34E2BF681617}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95F30899-E408-4634-9DB5-34E2BF681617}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95F30899-E408-4634-9DB5-34E2BF681617}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95F30899-E408-4634-9DB5-34E2BF681617}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A3F116A-1A56-47B7-A090-A65A485CDFCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A3F116A-1A56-47B7-A090-A65A485CDFCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A3F116A-1A56-47B7-A090-A65A485CDFCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A3F116A-1A56-47B7-A090-A65A485CDFCB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
