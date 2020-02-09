@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Installer;
 using Microsoft.Extensions.Logging;
 
-namespace installer.Helper
+namespace Installer.Helper
 {
     internal class Installer
     {
@@ -108,10 +107,10 @@ namespace installer.Helper
                     .Where(target => tempList.Any(t => t == target.Method.Name)).ToList();
             }
 
-            this.logger.LogDebug($"The following Targets will be executed:");
+            this.logger.LogDebug($"The following Targets will be executed in the following order:");
             foreach (var target in targetsToExecute)
             {
-                this.logger.LogTrace($"{target.Method.Name}");
+                this.logger.LogDebug($"{target.Method.Name}");
             }
             
             return targetsToExecute;

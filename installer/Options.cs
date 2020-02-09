@@ -2,10 +2,12 @@ using System;
 using System.IO;
 using System.Linq;
 using CommandLine;
+using Installer.Helper;
 using Microsoft.Extensions.Logging;
 
 namespace Installer
 {
+    [Singleton]
     public class Options
     {
         [Option('v', "verbose", Required = false, HelpText = "Set output to verbose messages.")]
@@ -37,9 +39,9 @@ namespace Installer
 
         internal void LogOptions(ILogger logger)
         {
-            logger.LogInformation("#######################################");
+            logger.LogInformation("======================================================================");
             logger.LogInformation("Command Line Options");
-            logger.LogInformation("#######################################");
+            logger.LogInformation("======================================================================");
             logger.LogInformation($"Verbose:           {this.Verbose}");
             logger.LogInformation($"Dns:               {this.Dns}");
             logger.LogInformation($"FullInstallation:  {this.FullInstallation}");

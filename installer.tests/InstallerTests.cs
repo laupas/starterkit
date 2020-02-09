@@ -2,21 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using Installer;
-using installer.Helper;
-using Microsoft.Extensions.DependencyInjection;
+using Installer.Helper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 
-namespace installer.tests
+namespace Installer.Tests
 {
+    
     [TestClass]
     public class InstallerTests : BaseTest
     {
         [TestMethod]
-        public void CreateTargets_FullIDefault_CorrectTargets()
+        public void CreateTargetsList_DefaultOptions_VerifyTargets()
         {
             // arrange
+            this.RegisterMock<Options>();
             this.StartAllServices();
             
             // act
@@ -28,12 +27,13 @@ namespace installer.tests
         }
         
         [TestMethod]
-        public void CreateTargets_Filter_CorrectTargets()
+        public void CreateTargetsList_WithFilter_VerifyTargets()
         {
             // arrange
-            this.Arguments.Add("-f");
-            this.Arguments.Add("--filter=CheckKubeCtl InstallIngress");
-
+            var optionsMock = this.RegisterMock<Options>();
+            optionsMock.Object.FullInstallation = true;
+            optionsMock.Object.Filter = "CheckKubeCtl InstallIngress";
+            
             this.StartAllServices();
             
             // act
@@ -46,11 +46,13 @@ namespace installer.tests
         }
         
         [TestMethod]
-        public void CreateTargets_SSLHack_FullIInstallation_CorrectTargets()
+        public void CreateTargetsList_FullInstallationWithInstallRootCertificates_VerifyTargets()
         {
             // arrange
-            this.Arguments.Add("-f");
-            this.Arguments.Add("--install-root-certificates");
+            var optionsMock = this.RegisterMock<Options>();
+            optionsMock.Object.FullInstallation = true;
+            optionsMock.Object.InstallRootCertificates = true;
+
             this.StartAllServices();
             
             // act
@@ -75,10 +77,12 @@ namespace installer.tests
         }
         
         [TestMethod]
-        public void CreateTargets_FullInstallation_CorrectTargets()
+        public void CreateTargetsList_FullInstallation_VerifyTargets()
         {
             // arrange
-            this.Arguments.Add("-f");
+            var optionsMock = this.RegisterMock<Options>();
+            optionsMock.Object.FullInstallation = true;
+
             this.StartAllServices();
             
             // act
@@ -102,10 +106,12 @@ namespace installer.tests
         }
         
         [TestMethod]
-        public void CreateTargets_RancherOnlyInstallation_CorrectTargets()
+        public void CreateTargetsList_InstallRancher_VerifyTargets()
         {
             // arrange
-            this.Arguments.Add("--install-rancher");
+            var optionsMock = this.RegisterMock<Options>();
+            optionsMock.Object.InstallRancher = true;
+
             this.StartAllServices();
             
             // act
@@ -125,10 +131,12 @@ namespace installer.tests
         }
         
         [TestMethod]
-        public void CreateTargets_StarterkitOnlyInstallation_CorrectTargets()
+        public void CreateTargetsList_InstallStarterkit_VerifyTargets()
         {
             // arrange
-            this.Arguments.Add("--install-starterkit");
+            var optionsMock = this.RegisterMock<Options>();
+            optionsMock.Object.InstallStarterKit = true;
+            
             this.StartAllServices();
             
             // act
@@ -144,23 +152,17 @@ namespace installer.tests
         }
 
         [TestMethod]
-        public void Install_AllTargetsSuceeded_VerifyOrder()
+        public void RunInstall_AllTargetsSuceeded_VerifyOrder()
         {
             // Arrange
-            Stack<string> results = new Stack<string>();
-            Mock<ITargetsBase> target1Mock = null;
-            this.StartSpecial(((collection, repository) =>
-            {
-                target1Mock = repository.Create<ITargetsBase>();
-                collection.AddSingleton(target1Mock.Object);
-                collection.AddSingleton(new Options());
-                collection.AddSingleton<Helper.Installer>();
-            }));
+            var results = new Stack<string>();
+            var targetMock = this.RegisterMock<ITargetsBase>();
+            this.StartAllServices();
 
             IDictionary<int,Action> actionList = new Dictionary<int, Action>();
             actionList.Add(1, () => results.Push("Action1"));
             actionList.Add(2, () => results.Push("Action2"));
-            target1Mock.Setup(x => x.DefineTargetToExecute()).Returns(actionList);
+            targetMock.Setup(x => x.DefineTargetToExecute()).Returns(actionList);
 
             // Act
             this.Get<Helper.Installer>().Install();
@@ -172,17 +174,11 @@ namespace installer.tests
         
         [TestMethod]
         [ExpectedException(typeof(InstallerException))]
-        public void Install_NotAllTargetsSuceeded_Throw()
+        public void RunInstall_NotAllTargetsSuceeded_Throw()
         {
             // Arrange
-            Mock<ITargetsBase> target1Mock = null;
-            this.StartSpecial(((collection, repository) =>
-            {
-                target1Mock = repository.Create<ITargetsBase>();
-                collection.AddSingleton(target1Mock.Object);
-                collection.AddSingleton(new Options());
-                collection.AddSingleton<Helper.Installer>();
-            }));
+            var target1Mock = this.RegisterMock<ITargetsBase>();
+            this.StartAllServices();
 
             IDictionary<int,Action> actionList = new Dictionary<int, Action>();
             actionList.Add(1, () => throw new Exception("Error"));

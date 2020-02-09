@@ -1,61 +1,49 @@
-using System;
 using System.Collections.Generic;
-using Installer;
-using installer.Helper;
+using System.Linq;
 using Installer.Helper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace installer.tests
+namespace Installer.Tests
 {
     [TestClass]
     public abstract class BaseTest
     {
-        private IServiceProvider serviceProvider;
-        protected Mock<IProcessHelper> ProcessMock { get; set; }
+//        protected Mock<IProcessHelper> ProcessMock { get; set; }
+        private readonly MockRepository mockRepository = new MockRepository(MockBehavior.Default);
+        private readonly List<Mock> mocks = new List<Mock>();
 
         protected void StartAllServices()
         {
-            if (this.serviceProvider == null)
+            Starter.Build(this.Arguments.ToArray(), collection =>
             {
-                var options = Options.SetOptions(this.Arguments.ToArray());
-
-                var serviceCollection = new ServiceCollection();
-                serviceCollection.AddLogging();
-
-                this.ProcessMock = new MockRepository(MockBehavior.Loose).Create<IProcessHelper>();
-
-                serviceCollection.AddTransient<IProcessHelper>(provider => this.ProcessMock.Object);
-
-                serviceCollection.AddSingleton<Helper.Installer>();
-                serviceCollection.AddSingleton<ITargetsBase, CommonTargets>();
-                serviceCollection.AddSingleton<ITargetsBase, RancherTargets>();
-                serviceCollection.AddSingleton<ITargetsBase, StarterkitTargets>();
-                serviceCollection.AddSingleton<IKubernetesHelper, KubernetesHelper>();
-                serviceCollection.AddSingleton(options);
-                
-                this.serviceProvider = serviceCollection.BuildServiceProvider();
-            }
-        }
-
-        protected void StartSpecial(Action<ServiceCollection, MockRepository> starter)
-        {
-            if (this.serviceProvider == null)
-            {
-                var serviceCollection = new ServiceCollection();
-                serviceCollection.AddLogging();
-                var mockRepository = new MockRepository(MockBehavior.Loose);
-                starter.Invoke(serviceCollection, mockRepository);
-                this.serviceProvider = serviceCollection.BuildServiceProvider();
-            }
+                foreach (var mock in this.mocks)
+                {
+                   collection
+                       .Where(r => r.ServiceType == mock.GetType().GenericTypeArguments[0])
+                       .ToList()
+                       .ForEach(c =>
+                       {
+                           collection.Remove(c);
+                       });
+                   collection.AddSingleton(mock.GetType().GenericTypeArguments[0], mock.Object);
+                }
+            });
         }
         
+        protected Mock<T> RegisterMock<T>() where T : class
+        {
+            var mock = this.mockRepository.Create<T>();
+            this.mocks.Add(mock);
+            return mock;
+        }
+
         protected List<string> Arguments { get; set; } = new List<string>();
 
         protected T Get<T>()
         {
-            return this.serviceProvider.GetService<T>();
+            return Starter.Get<T>();
         }
     }
 }

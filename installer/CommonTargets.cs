@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using Installer;
-using installer.Helper;
 using Installer.Helper;
 using Microsoft.Extensions.Logging;
 
-namespace installer
+namespace Installer
 {
     internal class CommonTargets : ITargetsBase
     {

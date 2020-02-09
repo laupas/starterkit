@@ -2,29 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
-using Installer;
-using installer.Helper;
 using Installer.Helper;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
 
-namespace installer
+namespace Installer
 {
     internal class RancherTargets : ITargetsBase
     {
         private readonly ILogger logger;
         private readonly Options options;
-        private readonly IProcessHelper processHelper;
         private readonly IKubernetesHelper kubernetesHelper;
         private string token;
 
-        public RancherTargets(ILoggerFactory loggerFactory, Options options, IProcessHelper processHelper, IKubernetesHelper kubernetesHelper) 
+        public RancherTargets(ILoggerFactory loggerFactory, Options options, IKubernetesHelper kubernetesHelper) 
         {
             this.logger = loggerFactory.CreateLogger(this.GetType().Name);
             this.options = options;
-            this.processHelper = processHelper;
             this.kubernetesHelper = kubernetesHelper;
         }
 
@@ -55,7 +51,7 @@ namespace installer
         {
             var ssl = "self";
             this.logger.LogInformation("Install Ingress");
-            this.kubernetesHelper.InstallResourceIfNotExists("ingress-nginx", "namespace");
+            this.kubernetesHelper.InstallResourceIfNotExists("ingress-nginx", "namespace", string.Empty);
             this.kubernetesHelper.InstallResourceIfNotExists(
                 "ingress-default-cert",
                 "secret tls",
@@ -75,7 +71,7 @@ namespace installer
         {
             var ssl = "self";
             this.logger.LogInformation("Install Rancher");
-            this.kubernetesHelper.InstallResourceIfNotExists("cattle-system", "namespace");
+            this.kubernetesHelper.InstallResourceIfNotExists("cattle-system", "namespace", string.Empty);
             this.kubernetesHelper.InstallResourceIfNotExists(
                 "tls-rancher-ingress",
                 "secret tls",
@@ -205,13 +201,13 @@ namespace installer
         internal void ExecuteUpdatesForDockerDesktop()
         {
             this.logger.LogInformation("Update some pods to work in Docker Desktop");
-            var serviceIpJsonString = this.processHelper.Read("kubectl", "get services -n cattle-system -o=json");
+            var serviceIpJsonString = this.kubernetesHelper.ExecuteKubectlCommand("get services -n cattle-system -o=json");
             dynamic serviceIpJson = JsonConvert.DeserializeObject(serviceIpJsonString);
             var serviceIp = serviceIpJson.items[0].spec.clusterIP.Value;
 
-            this.processHelper.Run("kubectl", $"set env deployments/cattle-cluster-agent CATTLE_CA_CHECKSUM- CATTLE_SERVER={serviceIp} -n cattle-system");
+            this.kubernetesHelper.ExecuteKubectlCommand($"set env deployments/cattle-cluster-agent CATTLE_CA_CHECKSUM- CATTLE_SERVER={serviceIp} -n cattle-system");
 
-            this.processHelper.Run("kubectl", $"set env daemonset/cattle-node-agent CATTLE_CA_CHECKSUM- CATTLE_SERVER={serviceIp} -n cattle-system)  -n cattle-system");
+            this.kubernetesHelper.ExecuteKubectlCommand($"set env daemonset/cattle-node-agent CATTLE_CA_CHECKSUM- CATTLE_SERVER={serviceIp} -n cattle-system)  -n cattle-system");
         }
     }
 }

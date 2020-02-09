@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace installer.Helper
+namespace Installer.Helper
 {
     public interface ITargetsBase
     {

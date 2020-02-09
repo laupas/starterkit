@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Installer;
-using installer.Helper;
 using Installer.Helper;
 using Microsoft.Extensions.Logging;
 
-namespace installer
+namespace Installer
 {
     internal class StarterkitTargets : ITargetsBase
     {
@@ -46,7 +45,7 @@ namespace installer
         {
             this.logger.LogInformation("Install Starterkit Commons");
 
-            this.kubernetesHelper.InstallResourceIfNotExists("starterkit", "namespace");
+            this.kubernetesHelper.CreateNameSpace("starterkit");
             this.processHelper.Run("kubectl", "apply -f ./../components/common/cert.yaml");
         }
 
