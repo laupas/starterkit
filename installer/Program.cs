@@ -9,7 +9,7 @@ namespace Installer
         {
             ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
             Starter.Build(args);
-            Starter.Get<Installer.Helper.Installer>().Install();
+            Starter.Get<Installer>().Install();
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Installer.Helper
         private static IServiceProvider serviceProvider;
         public static void Build(string[] args, Action<IServiceCollection> extend = null)
         {
-            var options = Options.SetOptions(args);
+            var options = Options.CreateOptions(args);
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddLogging(builder => builder
                 .AddFilter(level =>

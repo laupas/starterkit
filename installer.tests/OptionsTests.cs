@@ -1,4 +1,4 @@
-using FluentAssertions;
+/*using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Installer.Tests
@@ -162,4 +162,4 @@ namespace Installer.Tests
             options.UnInstallStarterKit.Should().Be(true);
         }
     }
-}
+}*/

@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using Installer;
 using Installer.Helper;
 using Microsoft.Extensions.Logging;
 
 namespace Installer
 {
-    internal class StarterkitTargets : ITargetsBase
+    internal class StarterkitTargets
     {
         private readonly Options options;
         private readonly IProcessHelper processHelper;
@@ -19,26 +16,6 @@ namespace Installer
             this.processHelper = processHelper;
             this.kubernetesHelper = kubernetesHelper;
             this.logger = loggerFactory.CreateLogger(this.GetType().Name);
-        }
-
-        public IDictionary<int, Action> DefineTargetToExecute()
-        {
-            var targets = new Dictionary<int, Action>();
-            
-            if(this.options.InstallStarterKit || this.options.FullInstallation)
-            {
-                targets.Add(21, this.InstallStarterkitCommon);
-                targets.Add(22, this.InstallStorage);
-                targets.Add(23, this.InstallLdap);
-                targets.Add(24, this.InstallJenkins);
-            }
-
-            if(this.options.UnInstallStarterKit)
-            {
-                targets.Add(71, this.UninstallStarterKit);
-            }
-            
-            return targets;        
         }
 
         internal void InstallStarterkitCommon()
@@ -97,12 +74,12 @@ namespace Installer
                 "deploy/jenkins");        
         }
 
-        internal void UninstallStarterKit()
-        {
-            this.logger.LogInformation("Uninstall Starterkit");
-            this.kubernetesHelper.UnInstallApplicationeIfExists("jenkins", "starterkit");
-            this.kubernetesHelper.UnInstallApplicationeIfExists("ldap-ui", "starterkit");
-            this.kubernetesHelper.UnInstallApplicationeIfExists("ldap", "starterkit");
-        }
+        // internal void UninstallStarterKit()
+        // {
+        //     this.logger.LogInformation("Uninstall Starterkit");
+        //     this.kubernetesHelper.UnInstallApplicationeIfExists("jenkins", "starterkit");
+        //     this.kubernetesHelper.UnInstallApplicationeIfExists("ldap-ui", "starterkit");
+        //     this.kubernetesHelper.UnInstallApplicationeIfExists("ldap", "starterkit");
+        // }
     }
 }

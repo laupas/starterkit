@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using Installer.Helper;
@@ -10,7 +9,7 @@ using RestSharp;
 
 namespace Installer
 {
-    internal class RancherTargets : ITargetsBase
+    internal class RancherTargets
     {
         private readonly ILogger logger;
         private readonly Options options;
@@ -22,29 +21,6 @@ namespace Installer
             this.logger = loggerFactory.CreateLogger(this.GetType().Name);
             this.options = options;
             this.kubernetesHelper = kubernetesHelper;
-        }
-
-        public IDictionary<int, Action> DefineTargetToExecute()
-        {
-            var targets = new Dictionary<int, Action>();
-            
-            if(this.options.InstallRancher || this.options.FullInstallation)
-            {
-                targets.Add(11, this.InstallIngress);
-                targets.Add(12, this.InstallRancher);
-                targets.Add(13, this.WaitUntilIsUpAndReady);
-                targets.Add(14, this.Login);
-                targets.Add(15, this.ChangePassword);
-                targets.Add(16, this.SetServerUrl);
-            }
-
-            if(this.options.InstallRancher || this.options.FullInstallation)
-            {
-                targets.Add(81, this.WaitUntilRancherIsActive);
-                targets.Add(82, this.ExecuteUpdatesForDockerDesktop);
-            }
-            
-            return targets;        
         }
 
         internal void InstallIngress()

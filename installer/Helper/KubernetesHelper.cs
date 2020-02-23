@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 
@@ -29,7 +28,14 @@ namespace Installer.Helper
             if (!this.CheckIfResourceExists(name, resourceType.Split(' ').First(), nameSpace))
             {
                 this.logger.LogInformation($"Create {resourceType} {name}");
-                this.processHelper.Run("kubectl", $"create {resourceType} {name} --namespace {nameSpace} {arguments}".Trim());
+                if (string.IsNullOrEmpty(nameSpace))
+                {
+                    this.processHelper.Run("kubectl", $"create {resourceType} {name} {arguments}".Trim());
+                }
+                else
+                {
+                    this.processHelper.Run("kubectl", $"create {resourceType} {name} --namespace {nameSpace} {arguments}".Trim());
+                }
             }
         }
         
