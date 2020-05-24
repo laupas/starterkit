@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "installer", "installer\inst
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "installer.tests", "installer.tests\installer.tests.csproj", "{8A3F116A-1A56-47B7-A090-A65A485CDFCB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "build", "build\build.csproj", "{C4F14DE0-FAB4-4AEE-96F3-26803E4BF8FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,7 @@ Global
 		{8A3F116A-1A56-47B7-A090-A65A485CDFCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A3F116A-1A56-47B7-A090-A65A485CDFCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A3F116A-1A56-47B7-A090-A65A485CDFCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4F14DE0-FAB4-4AEE-96F3-26803E4BF8FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4F14DE0-FAB4-4AEE-96F3-26803E4BF8FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -15,18 +15,18 @@ namespace Installer.Helper
             this.logger = loggerFactory.CreateLogger(this.GetType().Name);
         }
 
-        public int Run(string command, string args = null, string workingDirectory = null, bool throwOnError = true, bool noEcho = false)
+        public int Run(string command, string args = null, string workingDirectory = "", bool throwOnError = true, bool noEcho = false)
         {
             return this.RunInternal(command, args, workingDirectory, throwOnError, noEcho).ExitCode;
         }
         
-        public string Read(string command, string args = null, string workingDirectory = null, bool throwOnError = true, bool noEcho = false)
+        public string Read(string command, string args = null, string workingDirectory = "", bool throwOnError = true, bool noEcho = false)
         {
             this.RunInternal(command, args, workingDirectory, throwOnError, noEcho);
             return this.output.ToString();
         }
 
-        private Process RunInternal(string command, string args = null, string workingDirectory = null, bool throwOnError = true, bool noEcho = false)
+        private Process RunInternal(string command, string args = null, string workingDirectory = "", bool throwOnError = true, bool noEcho = false)
         {
             this.output.Clear();
             var pi = new ProcessStartInfo
@@ -38,17 +38,17 @@ namespace Installer.Helper
                 RedirectStandardError = true,
                 RedirectStandardOutput = true
             };
-            
-            var process = new Process() {StartInfo = pi};
+
+            var process = new Process() { StartInfo = pi };
             process.OutputDataReceived += (sender, eventArgs) =>
             {
                 if (!string.IsNullOrEmpty(eventArgs?.Data))
                 {
                     if (!noEcho)
                     {
-                        this.logger.LogInformation(eventArgs.Data);
+                        this.logger.LogDebug(eventArgs.Data);
                     }
-                    this.output.Append(eventArgs.Data);
+                    this.output.Append(eventArgs.Data + Environment.NewLine);
                 }
             };
             
@@ -58,11 +58,12 @@ namespace Installer.Helper
                 {
                     if (!noEcho)
                     {
-                        this.logger.LogError(eventArgs.Data);
+                        this.logger.LogError(eventArgs.Data + Environment.NewLine);
                     }
                 }
             };
             
+            this.logger.LogDebug($"Run: {command} {args}");
             process.Start();
             process.BeginErrorReadLine();
             process.BeginOutputReadLine();

@@ -23,50 +23,50 @@ master:
     password: "password"
     # Convert keystore.jks files content to base64 ( cat keystore.jks | base64 ) and put the output here
     jenkinsKeyStoreBase64Encoded: |
-        /u3+7QAAAAIAAAABAAAAAQANamVua2luc2NpLmNvbQAAAW2r/b1ZAAAFATCCBP0wDgYKKwYBBAEq
-        AhEBAQUABIIE6QbCqasvoHS0pSwYqSvdydMCB9t+VNfwhFIiiuAelJfO5sSe2SebJbtwHgLcRz1Z
-        gMtWgOSFdl3bWSzA7vrW2LED52h+jXLYSWvZzuDuh8hYO85m10ikF6QR+dTi4jra0whIFDvq3pxe
-        TnESxEsN+DvbZM3jA3qsjQJSeISNpDjO099dqQvHpnCn18lyk7J4TWJ8sOQQb1EM2zDAfAOSqA/x
-        QuPEFl74DlY+5DIk6EBvpmWhaMSvXzWZACGA0sYqa157dq7O0AqmuLG/EI5EkHETO4CrtBW+yLcy
-        2dUCXOMA+j+NjM1BjrQkYE5vtSfNO6lFZcISyKo5pTFlcA7ut0Fx2nZ8GhHTn32CpeWwNcZBn1gR
-        pZVt6DxVVkhTAkMLhR4rL2wGIi/1WRs23ZOLGKtyDNvDHnQyDiQEoJGy9nAthA8aNHa3cfdF10vB
-        Drb19vtpFHmpvKEEhpk2EBRF4fTi644Fuhu2Ied6118AlaPvEea+n6G4vBz+8RWuVCmZjLU+7h8l
-        Hy3/WdUPoIL5eW7Kz+hS+sRTFzfu9C48dMkQH3a6f3wSY+mufizNF9U298r98TnYy+PfDJK0bstG
-        Ph6yPWx8DGXKQBwrhWJWXI6JwZDeC5Ny+l8p1SypTmAjpIaSW3ge+KgcL6Wtt1R5hUV1ajVwVSUi
-        HF/FachKqPqyLJFZTGjNrxnmNYpt8P1d5JTvJfmfr55Su/P9n7kcyWp7zMcb2Q5nlXt4tWogOHLI
-        OzEWKCacbFfVHE+PpdrcvCVZMDzFogIq5EqGTOZe2poPpBVE+1y9mf5+TXBegy5HToLWvmfmJNTO
-        NCDuBjgLs2tdw2yMPm4YEr57PnMX5gGTC3f2ZihXCIJDCRCdQ9sVBOjIQbOCzxFXkVITo0BAZhCi
-        Yz61wt3Ud8e//zhXWCkCsSV+IZCxxPzhEFd+RFVjW0Nm9hsb2FgAhkXCjsGROgoleYgaZJWvQaAg
-        UyBzMmKDPKTllBHyE3Gy1ehBNGPgEBChf17/9M+j8pcm1OmlM434ctWQ4qW7RU56//yq1soFY0Te
-        fu2ei03a6m68fYuW6s7XEEK58QisJWRAvEbpwu/eyqfs7PsQ+zSgJHyk2rO95IxdMtEESb2GRuoi
-        Bs+AHNdYFTAi+GBWw9dvEgqQ0Mpv0//6bBE/Fb4d7b7f56uUNnnE7mFnjGmGQN+MvC62pfwfvJTT
-        EkT1iZ9kjM9FprTFWXT4UmO3XTvesGeE50sV9YPm71X4DCQwc4KE8vyuwj0s6oMNAUACW2ClU9QQ
-        y0tRpaF1tzs4N42Q5zl0TzWxbCCjAtC3u6xf+c8MCGrr7DzNhm42LOQiHTa4MwX4x96q7235oiAU
-        iQqSI/hyF5yLpWw4etyUvsx2/0/0wkuTU1FozbLoCWJEWcPS7QadMrRRISxHf0YobIeQyz34regl
-        t1qSQ3dCU9D6AHLgX6kqllx4X0fnFq7LtfN7fA2itW26v+kAT2QFZ3qZhINGfofCja/pITC1uNAZ
-        gsJaTMcQ600krj/ynoxnjT+n1gmeqThac6/Mi3YlVeRtaxI2InL82ZuD+w/dfY9OpPssQjy3xiQa
-        jPuaMWXRxz/sS9syOoGVH7XBwKrWpQcpchozWJt40QV5DslJkclcr8aC2AGlzuJMTdEgz1eqV0+H
-        bAXG9HRHN/0eJTn1/QAAAAEABVguNTA5AAADjzCCA4swggJzAhRGqVxH4HTLYPGO4rzHcCPeGDKn
-        xTANBgkqhkiG9w0BAQsFADCBgTELMAkGA1UEBhMCY2ExEDAOBgNVBAgMB29udGFyaW8xEDAOBgNV
-        BAcMB3Rvcm9udG8xFDASBgNVBAoMC2plbmtpbnN0ZXN0MRkwFwYDVQQDDBBqZW5raW5zdGVzdC5p
-        bmZvMR0wGwYJKoZIhvcNAQkBFg50ZXN0QHRlc3QuaW5mbzAeFw0xOTEwMDgxNTI5NTVaFw0xOTEx
-        MDcxNTI5NTVaMIGBMQswCQYDVQQGEwJjYTEQMA4GA1UECAwHb250YXJpbzEQMA4GA1UEBwwHdG9y
-        b250bzEUMBIGA1UECgwLamVua2luc3Rlc3QxGTAXBgNVBAMMEGplbmtpbnN0ZXN0LmluZm8xHTAb
-        BgkqhkiG9w0BCQEWDnRlc3RAdGVzdC5pbmZvMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-        AQEA02q352JTHGvROMBhSHvSv+vnoOTDKSTz2aLQn0tYrIRqRo+8bfmMjXuhkwZPSnCpvUGNAJ+w
-        Jrt/dqMoYUjCBkjylD/qHmnXN5EwS1cMg1Djh65gi5JJLFJ7eNcoSsr/0AJ+TweIal1jJSP3t3PF
-        9Uv21gm6xdm7HnNK66WpUUXLDTKaIs/jtagVY1bLOo9oEVeLN4nT2CYWztpMvdCyEDUzgEdDbmrP
-        F5nKUPK5hrFqo1Dc5rUI4ZshL3Lpv398aMxv6n2adQvuL++URMEbXXBhxOrT6rCtYzbcR5fkwS9i
-        d3Br45CoWOQro02JAepoU0MQKY5+xQ4Bq9Q7tB9BAwIDAQABMA0GCSqGSIb3DQEBCwUAA4IBAQAe
-        4xc+mSvKkrKBHg9/zpkWgZUiOp4ENJCi8H4tea/PCM439v6y/kfjT/okOokFvX8N5aa1OSz2Vsrl
-        m8kjIc6hiA7bKzT6lb0EyjUShFFZ5jmGVP4S7/hviDvgB5yEQxOPpumkdRP513YnEGj/o9Pazi5h
-        /MwpRxxazoda9r45kqQpyG+XoM4pB+Fd3JzMc4FUGxfVPxJU4jLawnJJiZ3vqiSyaB0YyUL+Er1Q
-        6NnqtR4gEBF0ZVlQmkycFvD4EC2boP943dLqNUvop+4R3SM1QMM6P5u8iTXtHd/VN4MwMyy1wtog
-        hYAzODo1Jt59pcqqKJEas0C/lFJEB3frw4ImNx5fNlJYOpx+ijfQs9m39CevDq0=
+      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
   # Used for label app.kubernetes.io/component
   componentName: "jenkins-master"
-  image: "devopsfamily/starterkit.jenkins"
-  tag: "latest"
+  image: "jenkins/jenkins"
+  tag: "lts"
   imagePullPolicy: "Always"
   imagePullSecretName:
   # Optionally configure lifetime for master-container
@@ -108,12 +108,11 @@ master:
         <disableRolePrefixing>true</disableRolePrefixing>
       </securityRealm>  # Allows to configure different AuthorizationStrategy using Jenkins XML
   authorizationStrategy: |-
-     <authorizationStrategy class="hudson.security.FullControlOnceLoggedInAuthorizationStrategy">
-       <denyAnonymousReadAccess>true</denyAnonymousReadAccess>
-     </authorizationStrategy>
+    <authorizationStrategy class="hudson.security.FullControlOnceLoggedInAuthorizationStrategy">
+      <denyAnonymousReadAccess>true</denyAnonymousReadAccess>
+    </authorizationStrategy>
 
-
-
+  # Allows to configure different AuthorizationStrategy using Jenkins XML
   hostNetworking: false
   # When enabling LDAP or another non-Jenkins identity source, the built-in admin account will no longer exist.
   # Since the AdminUser is used by configAutoReload, in order to use configAutoReload you must change the
@@ -218,7 +217,7 @@ master:
   # LoadBalancerSourcesRange is a list of allowed CIDR values, which are combined with ServicePort to
   # set allowed inbound rules on the security group assigned to the master load balancer
   loadBalancerSourceRanges:
-  - 0.0.0.0/0
+    - 0.0.0.0/0
   # Optionally assign a known public LB IP
   # loadBalancerIP: 1.2.3.4
   # Optionally configure a JMX port
@@ -235,17 +234,20 @@ master:
 
   # List of plugins to be install during Jenkins master start
   installPlugins:
-    - kubernetes:1.21.2
-    - workflow-job:2.36
-    - workflow-aggregator:2.6
-    - credentials-binding:1.20
-    - git:4.0.0
+    - kubernetes:latest
+    - workflow-job:latest
+    - workflow-aggregator:latest
+    - credentials-binding:latest
+    - configuration-as-code:latest
+    - git:latest
     - github:latest
     - ldap:latest
     - job-dsl:latest
     - authorize-project:latest
     - generic-webhook-trigger:latest
     - webhook-step:latest
+    - uno-choice:latest
+    - timestamper:latest
 
   # Enable to always override the installed plugins with the values of 'master.installPlugins' on upgrade or redeployment.
   # overwritePlugins: true
@@ -253,14 +255,14 @@ master:
   # The plugin is not installed by default, please update master.installPlugins.
   enableRawHtmlMarkupFormatter: false
   # Used to approve a list of groovy functions in pipelines used the script-security plugin. Can be viewed under /scriptApproval
-  scriptApproval: 
-  - "method groovy.lang.GroovyObject invokeMethod java.lang.String java.lang.Object"
-  - "method groovy.json.JsonSlurperClassic parseText java.lang.String"
-  - "method groovy.json.JsonSlurper parse java.net.URL"
-  - "method hudson.model.Cause$RemoteCause getNote"
-  - "method hudson.model.Run getCause java.lang.Class"
-  - "method org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper getRawBuild"
-  - "new java.util.ArrayList"
+  scriptApproval:
+    - "method groovy.lang.GroovyObject invokeMethod java.lang.String java.lang.Object"
+    - "method groovy.json.JsonSlurperClassic parseText java.lang.String"
+    - "method groovy.json.JsonSlurper parse java.net.URL"
+    - "method hudson.model.Cause$RemoteCause getNote"
+    - "method hudson.model.Run getCause java.lang.Class"
+    - "method org.jenkinsci.plugins.workflow.support.steps.build.RunWrapper getRawBuild"
+    - "new java.util.ArrayList"
   #  - "new groovy.json.JsonSlurperClassic"
   # List of groovy init scripts to be executed during Jenkins master start
   initScripts: []
@@ -287,11 +289,11 @@ master:
   JCasC:
     enabled: true
     defaultConfig: false
-    pluginVersion: "1.35"
+    # pluginVersion: "1.35"
     # it's only used when plugin version is <=1.18 for later version the
     # configuration as code support plugin is no longer needed
     # supportPluginVersion: "1.18"
-    configScripts: 
+    configScripts:
       welcome-message: |
         jenkins:
           systemMessage: Welcome to the Starter-Kit Jenkins. Use the load plugin job to load plugins.
@@ -373,11 +375,18 @@ master:
                             }
                           }
 
-                          stage("Step 1") {
-                              steps{
-                                sh  label: 'ansible-playbook', 
-                                    script: "ansible-playbook /var/starterkit/loadPlugin/load_plugin.yaml -v -e 'workspace=^${WORKSPACE} project_name=^${params.Name} credential=^${params.Credential} branch=^${params.Branch} plugin_url=^${params.PluginUrl}'"
+                          stage("Execue Ansible Scripts") {
+                            steps{
+                              withCredentials(
+                              [
+                                usernamePassword(credentialsId: "consul", passwordVariable: 'consul_token', usernameVariable: 'not_used'),
+                                usernamePassword(credentialsId: "^${params.Credential}", passwordVariable: 'password', usernameVariable: 'user')
+                              ]) {
+                                sh "cp /var/starterkit/loadPlugin/vault.py ./vault.py"
+                                sh "chmod +x ./vault.py"
+                                sh  "export ANSIBLE_VAULT_PASSWORD=^${password}; ansible-playbook /var/starterkit/loadPlugin/load_plugin.yaml --vault-password-file ./vault.py -vv -e 'ipaddress=consul secret_password=^${consul_token} workspace=^${WORKSPACE} project_name=\\"^${params.Name}\\" credential=^${params.Credential} branch=^${params.Branch} plugin_url=^${params.PluginUrl}'"
                               }
+                            }
                           }
 
                           stage("Execute Job Dsl Files") {
@@ -391,33 +400,6 @@ master:
 
                       '''.stripIndent())
                   }
-                }
-              }
-
-      starter_kit_load_plugin_2: |
-        jobs:
-          - script: >
-              job('starterkit/test') {
-                parameters {
-                    booleanParam('FLAG', true)
-                    choiceParam('OPTION', ['option 1 (default)', 'option 2', 'option 3'])
-                }
-                steps {
-                  shell('''
-              echo "Start load plugin";\n
-              echo "1234";\n
-              echo "1234";\n
-                  ''')
-                  shell('''
-              docker run --rm -v $WORKSPACE:/work ubuntu ls /work
-                  ''')
-                  shell('''
-              docker run --rm -v $WORKSPACE:/work ubuntu touch /work/test.txt
-                  ''')
-                  shell('''
-              docker run --rm -v $WORKSPACE:/work ubuntu ls /work
-                  ''')
-
                 }
               }
 
@@ -442,7 +424,7 @@ master:
         #     memory: 100Mi
         #   requests:
         #     cpu: 50m
-        #     memory: 50Mi
+      #     memory: 50Mi
       # SSH port value can be set to any unused TCP port.  The default, 1044, is a non-standard SSH port that has been chosen at random.
       # Is only used to reload jcasc config from the sidecar container running in the Jenkins master pod.
       # This TCP port will not be open in the pod (unless you specifically configure this), so Jenkins will not be
@@ -566,11 +548,12 @@ master:
     alertingrules: []
 
   # Can be used to disable rendering master test resources when using helm template
+
   testEnabled: true
 
 agent:
   enabled: true
-  image: "devopsfamily/starterkit.jenkins-slave"
+  image: "jenkins/jnlp-slave"
   tag: "latest"
   customJenkinsLabels: []
   # name of the secret to be used for image pulling
@@ -597,13 +580,13 @@ agent:
   envVars: []
   # - name: PATH
   #   value: /usr/local/bin
-  volumes: 
-  - type: HostPath
-    mountPath: /var/run/docker.sock  
-    hostPath: /var/run/docker.sock  
-  - type: ConfigMap
-    mountPath: /var/starterkit/loadPlugin
-    configMapName: starterkit
+  volumes:
+    # - type: HostPath
+    #   mountPath: /var/run/docker.sock  
+    #   hostPath: /var/run/docker.sock  
+    - type: ConfigMap
+      mountPath: /var/starterkit/loadPlugin
+      configMapName: starterkit
   # - type: HostPath
   #   mountPath: /home/jenkins/agent
   #   hostPath: /home/jenkins/agent
@@ -716,7 +699,7 @@ backup:
   annotations: {}
     # Example for authorization to AWS S3 using kube2iam
     # Can also be done using environment variables
-    # iam.amazonaws.com/role: "jenkins"
+  # iam.amazonaws.com/role: "jenkins"
   image:
     repository: "maorfr/kube-tasks"
     tag: "0.2.0"
@@ -725,16 +708,16 @@ backup:
   extraArgs: []
   # Add existingSecret for AWS credentials
   existingSecret: {}
-  ## Example for using an existing secret
-   # jenkinsaws:
-  ## Use this key for AWS access key ID
-     # awsaccesskey: jenkins_aws_access_key
-  ## Use this key for AWS secret access key
-     # awssecretkey: jenkins_aws_secret_key
-  # Add additional environment variables
-   # jenkinsgcp:
-  ## Use this key for GCP credentials
-     # gcpcredentials: credentials.json
+    ## Example for using an existing secret
+    # jenkinsaws:
+    ## Use this key for AWS access key ID
+    # awsaccesskey: jenkins_aws_access_key
+    ## Use this key for AWS secret access key
+    # awssecretkey: jenkins_aws_secret_key
+    # Add additional environment variables
+    # jenkinsgcp:
+    ## Use this key for GCP credentials
+  # gcpcredentials: credentials.json
   env: []
   # Example environment variable required for AWS credentials chain
   # - name: "AWS_REGION"
@@ -752,3 +735,5 @@ backup:
   # Ref: https://github.com/maorfr/skbn
   destination: "s3://jenkins-data/backup"
 checkDeprecation: true
+ 
+

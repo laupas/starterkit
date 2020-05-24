@@ -1,6 +1,6 @@
 using System;
 
-namespace installer.Helper
+namespace Installer.Helper
 {
     internal class InstallerException : Exception
     {
