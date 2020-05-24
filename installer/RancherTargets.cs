@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using Installer.Helper;
@@ -10,7 +9,7 @@ using RestSharp;
 
 namespace Installer
 {
-    internal class RancherTargets : ITargetsBase
+    internal class RancherTargets : IRancherTargets
     {
         private readonly ILogger logger;
         private readonly Options options;
@@ -24,28 +23,25 @@ namespace Installer
             this.kubernetesHelper = kubernetesHelper;
         }
 
-        public IDictionary<int, Action> DefineTargetToExecute()
+        public void InstallRancher(InstallerProcess installerProcess)
         {
-            var targets = new Dictionary<int, Action>();
-            
-            if(this.options.InstallRancher || this.options.FullInstallation)
-            {
-                targets.Add(11, this.InstallIngress);
-                targets.Add(12, this.InstallRancher);
-                targets.Add(13, this.WaitUntilIsUpAndReady);
-                targets.Add(14, this.Login);
-                targets.Add(15, this.ChangePassword);
-                targets.Add(16, this.SetServerUrl);
-            }
+            this.InstallIngress();
+            this.InstallCertManager();
+            this.InstallRancher();
 
-            if(this.options.InstallRancher || this.options.FullInstallation)
-            {
-                targets.Add(81, this.WaitUntilRancherIsActive);
-                targets.Add(82, this.ExecuteUpdatesForDockerDesktop);
-            }
+            ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, errors) => true;
+
+            this.WaitUntilIsUpAndReady();
+            this.Login();
+            this.ChangePassword();
+            this.SetServerUrl();
+            this.WaitUntilRancherIsActive();
+            this.ExecuteUpdatesForDockerDesktop();
+            installerProcess.AddExecutedTask("InstallRancher");
             
-            return targets;        
+            ServicePointManager.ServerCertificateValidationCallback = null;
         }
+
 
         internal void InstallIngress()
         {
@@ -67,37 +63,48 @@ namespace Installer
                 "deployment.apps/ingress-nginx-nginx-ingress-default-backend");        
         }
 
-        internal void InstallRancher()
+        internal void InstallCertManager()
         {
-            var ssl = "self";
+            this.kubernetesHelper.InstallResourceIfNotExists("cert-manager", "namespace", string.Empty);
+            this.kubernetesHelper.InstallApplicationeIfNotExists(
+                "cert-manager",
+                "jetstack/cert-manager",
+                "cert-manager",
+                "--version v0.12.0",
+                "deployment.apps/cert-manager",
+                "deployment.apps/cert-manager-cainjector",
+                "deployment.apps/cert-manager-webhook");
+        }
+
+        public void InstallRancher()
+        {
             this.logger.LogInformation("Install Rancher");
             this.kubernetesHelper.InstallResourceIfNotExists("cattle-system", "namespace", string.Empty);
-            this.kubernetesHelper.InstallResourceIfNotExists(
-                "tls-rancher-ingress",
-                "secret tls",
-                "cattle-system",
-                $"--cert=./../ssl/{ssl}/server.crt --key=./../ssl/{ssl}/server.key ");
-
-            this.kubernetesHelper.InstallResourceIfNotExists(
-                "tls-ca",
-                "secret generic",
-                "cattle-system",
-                $"--from-file=./../ssl/{ssl}/cacerts.pem");
+            // this.kubernetesHelper.InstallResourceIfNotExists(
+            //     "tls-rancher-ingress",
+            //     "secret tls",
+            //     "cattle-system",
+            //     $"--cert=./../ssl/{ssl}/server.crt --key=./../ssl/{ssl}/server.key ");
+            //
+            // this.kubernetesHelper.InstallResourceIfNotExists(
+            //     "tls-ca",
+            //     "secret generic",
+            //     "cattle-system",
+            //     $"--from-file=./../ssl/{ssl}/cacerts.pem");
 
             this.kubernetesHelper.InstallApplicationeIfNotExists(
                 "rancher",
                 "rancher-latest/rancher",
                 "cattle-system",
-                $"--set hostname={this.options.Dns} " +
-                "--set privateCA=true " +
-                "--set 'extraEnv[0].name=CATTLE_CA_CHECKSUM' " +
-                "--set 'extraEnv[0].value=' " +
-                "--set ingress.tls.source=secret",
+                $"--set hostname={this.options.Dns} ",
+                // "--set privateCA=true " +
+                // "--set 'extraEnv[0].name=CATTLE_CA_CHECKSUM' " +
+                // "--set 'extraEnv[0].value=' " +
+                // "--set ingress.tls.source=secret",
                 "deploy/rancher");
 
 //                Command.Run("kubectl", "apply -f ./../components/rancher/rancher.ingress.yml");        }
-
-            }
+        }
 
         internal void WaitUntilIsUpAndReady()
         {
@@ -189,9 +196,9 @@ namespace Installer
             var pingRequest = new RestRequest("/v3/clusters/local");
             var result = client.Get(pingRequest);
             dynamic json = JsonConvert.DeserializeObject(result.Content);
-            while (!json.state.Value.Equals("active"))
+            while (!json?.state.Value.Equals("active"))
             {
-                this.logger.AppendToLastLog(".");
+                this.logger.LogDebug(".");
                 Thread.Sleep(1000);
                 result = client.Get(pingRequest);
                 json = JsonConvert.DeserializeObject(result.Content);
@@ -203,11 +210,15 @@ namespace Installer
             this.logger.LogInformation("Update some pods to work in Docker Desktop");
             var serviceIpJsonString = this.kubernetesHelper.ExecuteKubectlCommand("get services -n cattle-system -o=json");
             dynamic serviceIpJson = JsonConvert.DeserializeObject(serviceIpJsonString);
-            var serviceIp = serviceIpJson.items[0].spec.clusterIP.Value;
+            var serviceIp = serviceIpJson?.items[0].spec.clusterIP.Value;
+            
+            this.kubernetesHelper.WaitForResourceBeExisting("cattle-cluster-agent", "deployments", "cattle-system");
+            this.kubernetesHelper.WaitForResourceBeExisting("cattle-node-agent", "daemonset", "cattle-system");
 
             this.kubernetesHelper.ExecuteKubectlCommand($"set env deployments/cattle-cluster-agent CATTLE_CA_CHECKSUM- CATTLE_SERVER={serviceIp} -n cattle-system");
 
             this.kubernetesHelper.ExecuteKubectlCommand($"set env daemonset/cattle-node-agent CATTLE_CA_CHECKSUM- CATTLE_SERVER={serviceIp} -n cattle-system)  -n cattle-system");
         }
+
     }
 }

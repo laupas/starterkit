@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 
 namespace Installer.Helper
@@ -29,7 +30,14 @@ namespace Installer.Helper
             if (!this.CheckIfResourceExists(name, resourceType.Split(' ').First(), nameSpace))
             {
                 this.logger.LogInformation($"Create {resourceType} {name}");
-                this.processHelper.Run("kubectl", $"create {resourceType} {name} --namespace {nameSpace} {arguments}".Trim());
+                if (string.IsNullOrEmpty(nameSpace))
+                {
+                    this.processHelper.Run("kubectl", $"create {resourceType} {name} {arguments}".Trim());
+                }
+                else
+                {
+                    this.processHelper.Run("kubectl", $"create {resourceType} {name} --namespace {nameSpace} {arguments}".Trim());
+                }
             }
         }
         
@@ -41,7 +49,7 @@ namespace Installer.Helper
                 this.processHelper.Run("helm", $"install {name} {repo} --namespace {nameSpace} {arguments}".Trim());
                 checkRollout?.ToList().ForEach(check =>
                     {
-                        
+                        this.logger.LogInformation($"Wait for rollout of {check}");
                         this.processHelper.Run("kubectl", $"rollout status {check} --namespace {nameSpace}");
                 });
             }
@@ -86,6 +94,22 @@ namespace Installer.Helper
         public string ExecuteKubectlCommand(string command)
         {
             return this.processHelper.Read($"kubectl", command);
+        }
+
+        public void WaitForResourceBeExisting(string name, string type, string nameSpace)
+        {
+            this.logger.LogDebug($"Wait until {name} exists");
+            while (true)
+            {
+                var exists = this.processHelper.Read("kubectl", $"get {type} --namespace {nameSpace}")
+                    .Split(Environment.NewLine)
+                    .Any(l => l.Contains(name));
+                if (exists)
+                {
+                    return;
+                }
+                Thread.Sleep(1000);
+            }
         }
     }
 }

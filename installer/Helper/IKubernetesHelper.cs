@@ -15,5 +15,7 @@ namespace Installer.Helper
         bool CheckIfApplicationExists(string name, string nameSpace);
         
         string ExecuteKubectlCommand(string command);
+        
+        void WaitForResourceBeExisting(string name, string type, string nameSpace);
     }
 }

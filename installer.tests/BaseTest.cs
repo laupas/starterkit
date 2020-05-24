@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using Installer.Helper;
+using LauPas.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -11,39 +13,66 @@ namespace Installer.Tests
     public abstract class BaseTest
     {
 //        protected Mock<IProcessHelper> ProcessMock { get; set; }
-        private readonly MockRepository mockRepository = new MockRepository(MockBehavior.Default);
-        private readonly List<Mock> mocks = new List<Mock>();
 
         protected void StartAllServices()
         {
-            Starter.Build(this.Arguments.ToArray(), collection =>
-            {
-                foreach (var mock in this.mocks)
-                {
-                   collection
-                       .Where(r => r.ServiceType == mock.GetType().GenericTypeArguments[0])
-                       .ToList()
-                       .ForEach(c =>
-                       {
-                           collection.Remove(c);
-                       });
-                   collection.AddSingleton(mock.GetType().GenericTypeArguments[0], mock.Object);
-                }
-            });
+            Starter.Create().AddAssembly<installer.Installer>().AddModule<TestModule>().Build(this.Arguments.ToArray());
         }
         
         protected Mock<T> RegisterMock<T>() where T : class
         {
-            var mock = this.mockRepository.Create<T>();
-            this.mocks.Add(mock);
-            return mock;
+            return TestModule.RegisterMock<T>();
+        }
+
+        protected string CatchConsole(Action action, string stringToSend = null)
+        {
+            var tempOut = Console.Out;
+            var consoleOutput = new StringWriter();
+            var consoleIn = new StringReader(stringToSend);
+            Console.SetIn(consoleIn);
+            Console.SetOut(consoleOutput);
+            try
+            {
+                action();
+            }
+            finally
+            {
+                Console.SetOut(tempOut);
+            }
+
+            return consoleOutput.ToString();
         }
 
         protected List<string> Arguments { get; set; } = new List<string>();
 
         protected T Get<T>()
         {
-            return Starter.Get<T>();
+            return Starter.Get.Resolve<T>();
+        }
+    }
+
+    public class TestModule : IModule
+    {
+        private readonly static MockRepository MockRepository = new MockRepository(MockBehavior.Default);
+        private readonly static List<Mock> Mocks = new List<Mock>();
+
+        internal static Mock<T> RegisterMock<T>() where T : class
+        {
+            var mock = MockRepository.Create<T>();
+            Mocks.Add(mock);
+            return mock;
+        }
+
+        public void Extend(IServiceCollection serviceCollection)
+        {
+            foreach (var mock in Mocks)
+            {
+                serviceCollection
+                    .Where(r => r.ServiceType == mock.GetType().GenericTypeArguments[0])
+                    .ToList()
+                    .ForEach(c => { serviceCollection.Remove(c); });
+                serviceCollection.AddSingleton(mock.GetType().GenericTypeArguments[0], mock.Object);
+            }
         }
     }
 }

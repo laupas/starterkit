@@ -12,7 +12,7 @@
 3. Run the following command in the terminal:
 
 `````
-docker run --rm -it -v $HOME/.kube:/root/.kube devopsfamily/starterkit.installer --install-rancher --install-starterkit
+docker run --rm -it -v $HOME/.kube:/root/.kube devopsfamily/starterkit.installer --verbose
 `````
 
 ## Install starterkit on Windows
@@ -23,12 +23,12 @@ docker run --rm -it -v $HOME/.kube:/root/.kube devopsfamily/starterkit.installer
 
 `````
 #in CMD
-docker run --rm -it -v %homepath%/.kube:/root/.kube devopsfamily/starterkit.installer --install-rancher --install-starterkit
+docker run --rm -it -v %homepath%/.kube:/root/.kube devopsfamily/starterkit.installer --verbose
 `````
 
 `````
 #in Powershell
-docker run --rm -it -v $HOME/.kube:/root/.kube devopsfamily/starterkit.installer --install-rancher --install-starterkit
+docker run --rm -it -v $HOME/.kube:/root/.kube devopsfamily/starterkit.installer --verbose
 `````
 
 ## Use starterkit
@@ -39,4 +39,5 @@ You can access the Rancher Dashboard under <https://starterkit.devops.family> wi
 
 ### Jenkins
 
+coming soon...
 You can access Jenkins under <https://jenkins.starterkit.devops.family/> with username _devops_ and password _devops_

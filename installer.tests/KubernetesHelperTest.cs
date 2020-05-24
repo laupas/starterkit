@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Installer.Helper;
+using LauPas.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -16,12 +17,11 @@ namespace Installer.Tests
             var processMock = this.RegisterMock<IProcessHelper>();
             var retournString = "some string";
             processMock.Setup(x => x.Read("kubectl", It.IsRegex("get .*"), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>())).Returns(retournString);
-
-
+            
             this.StartAllServices();
 
             // Act
-            Starter.Get<IKubernetesHelper>().CreateNameSpace(nameSapce);
+            Starter.Get.Resolve<IKubernetesHelper>().CreateNameSpace(nameSapce);
 
             //Assert
             processMock.Verify(p => p.Run("kubectl", $"create namespace {nameSapce}", It.IsAny<string>(), true, false));
@@ -39,7 +39,7 @@ namespace Installer.Tests
             this.StartAllServices();
 
             // Act
-            Starter.Get<IKubernetesHelper>().CreateNameSpace(nameSapce);
+            Starter.Get.Resolve<IKubernetesHelper>().CreateNameSpace(nameSapce);
 
             //Assert
             processMock.Verify(p => p.Run("kubectl", $"create namespace {nameSapce}", It.IsAny<string>(), true, false), Times.Never);
@@ -59,7 +59,7 @@ namespace Installer.Tests
             this.StartAllServices();
 
             // Act
-            Starter.Get<IKubernetesHelper>().InstallResourceIfNotExists(name, resourceType, nameSapce);
+            Starter.Get.Resolve<IKubernetesHelper>().InstallResourceIfNotExists(name, resourceType, nameSapce);
 
             //Assert
             processMock.Verify(p => p.Run("kubectl", $"create {resourceType} {name} --namespace {nameSapce}", It.IsAny<string>(), true, false));
@@ -79,7 +79,7 @@ namespace Installer.Tests
             this.StartAllServices();
 
             // Act
-            Starter.Get<IKubernetesHelper>().InstallResourceIfNotExists(name, resourceType, nameSapce);
+            Starter.Get.Resolve<IKubernetesHelper>().InstallResourceIfNotExists(name, resourceType, nameSapce);
 
             //Assert
             processMock.Verify(p => p.Run("kubectl", $"create {resourceType} {name} --namespace {nameSapce}", It.IsAny<string>(), true, false), Times.Never);
@@ -99,7 +99,7 @@ namespace Installer.Tests
             this.StartAllServices();
 
             // Act
-            Starter.Get<IKubernetesHelper>().InstallApplicationeIfNotExists(name, repoName, nameSapce);
+            Starter.Get.Resolve<IKubernetesHelper>().InstallApplicationeIfNotExists(name, repoName, nameSapce);
 
             //Assert
             processMock.Verify(p => p.Run("helm", $"install {name} {repoName} --namespace {nameSapce}", It.IsAny<string>(), true, false));
@@ -119,7 +119,7 @@ namespace Installer.Tests
             this.StartAllServices();
 
             // Act
-            Starter.Get<IKubernetesHelper>().InstallApplicationeIfNotExists(name, repoName, nameSapce);
+            Starter.Get.Resolve<IKubernetesHelper>().InstallApplicationeIfNotExists(name, repoName, nameSapce);
 
             //Assert
             processMock.Verify(p => p.Run("helm", $"install {name} {repoName} --namespace {nameSapce}", It.IsAny<string>(), true, false), Times.Never);
@@ -138,7 +138,7 @@ namespace Installer.Tests
             this.StartAllServices();
 
             // Act
-            Starter.Get<IKubernetesHelper>().UnInstallApplicationeIfExists(name, nameSapce);
+            Starter.Get.Resolve<IKubernetesHelper>().UnInstallApplicationeIfExists(name, nameSapce);
 
             //Assert
             processMock.Verify(p => p.Run("helm", $"uninstall {name} --namespace {nameSapce}", It.IsAny<string>(), true, false), Times.Never);
@@ -157,7 +157,7 @@ namespace Installer.Tests
             this.StartAllServices();
 
             // Act
-            Starter.Get<IKubernetesHelper>().UnInstallApplicationeIfExists(name, nameSapce);
+            Starter.Get.Resolve<IKubernetesHelper>().UnInstallApplicationeIfExists(name, nameSapce);
 
             //Assert
             processMock.Verify(p => p.Run("helm", $"uninstall {name} --namespace {nameSapce}", It.IsAny<string>(), true, false));
@@ -177,7 +177,7 @@ namespace Installer.Tests
             this.StartAllServices();
 
             // Act
-            var existing = Starter.Get<IKubernetesHelper>().CheckIfResourceExists(name, resourceType, nameSapce);
+            var existing = Starter.Get.Resolve<IKubernetesHelper>().CheckIfResourceExists(name, resourceType, nameSapce);
 
             //Assert
             existing.Should().BeFalse();
@@ -198,7 +198,7 @@ namespace Installer.Tests
             this.StartAllServices();
 
             // Act
-            var existing = Starter.Get<IKubernetesHelper>().CheckIfResourceExists(name, resourceType, nameSapce);
+            var existing = Starter.Get.Resolve<IKubernetesHelper>().CheckIfResourceExists(name, resourceType, nameSapce);
 
             //Assert
             existing.Should().BeTrue();
@@ -218,7 +218,7 @@ namespace Installer.Tests
             this.StartAllServices();
 
             // Act
-            var existing = Starter.Get<IKubernetesHelper>().CheckIfApplicationExists(name, nameSapce);
+            var existing = Starter.Get.Resolve<IKubernetesHelper>().CheckIfApplicationExists(name, nameSapce);
 
             //Assert
             existing.Should().BeFalse();
@@ -238,7 +238,7 @@ namespace Installer.Tests
             this.StartAllServices();
 
             // Act
-            var existing = Starter.Get<IKubernetesHelper>().CheckIfApplicationExists(name, nameSapce);
+            var existing = Starter.Get.Resolve<IKubernetesHelper>().CheckIfApplicationExists(name, nameSapce);
 
             //Assert
             existing.Should().BeTrue();

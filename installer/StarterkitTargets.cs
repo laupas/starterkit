@@ -1,12 +1,10 @@
-using System;
-using System.Collections.Generic;
-using Installer;
+using System.Linq;
 using Installer.Helper;
 using Microsoft.Extensions.Logging;
 
 namespace Installer
 {
-    internal class StarterkitTargets : ITargetsBase
+    internal class StarterkitTargets : IStarterkitTargets
     {
         private readonly Options options;
         private readonly IProcessHelper processHelper;
@@ -21,37 +19,22 @@ namespace Installer
             this.logger = loggerFactory.CreateLogger(this.GetType().Name);
         }
 
-        public IDictionary<int, Action> DefineTargetToExecute()
-        {
-            var targets = new Dictionary<int, Action>();
-            
-            if(this.options.InstallStarterKit || this.options.FullInstallation)
-            {
-                targets.Add(21, this.InstallStarterkitCommon);
-                targets.Add(22, this.InstallStorage);
-                targets.Add(23, this.InstallLdap);
-                targets.Add(24, this.InstallJenkins);
-            }
-
-            if(this.options.UnInstallStarterKit)
-            {
-                targets.Add(71, this.UninstallStarterKit);
-            }
-            
-            return targets;        
-        }
-
-        internal void InstallStarterkitCommon()
+        public void InstallStarterkitCommon(InstallerProcess installerProcess)
         {
             this.logger.LogInformation("Install Starterkit Commons");
 
             this.kubernetesHelper.CreateNameSpace("starterkit");
             this.processHelper.Run("kubectl", "apply -f ./../components/common/cert.yaml");
+            installerProcess.AddExecutedTask("InstallStarterkitCommon");
         }
 
-        internal void InstallLdap()
+        public void InstallLdap(InstallerProcess installerProcess)
         {
             this.logger.LogInformation("Install LDAP");
+            if (!installerProcess.ExecutedActions.Contains("InstallStarterkitCommon"))
+            {
+                InstallStarterkitCommon(installerProcess);
+            }
                 
             this.kubernetesHelper.InstallApplicationeIfNotExists(
                 "ldap",
@@ -64,12 +47,18 @@ namespace Installer
                 "",
                 "starterkit",
                 $"./../components/openldapui --set ingress.hosts[0].host=ldap.{this.options.Dns} --set ingress.hosts[0].paths[0]=/",
-                "deploy/ldap-ui-openldapui");        
+                "deploy/ldap-ui-openldapui");      
+            installerProcess.AddExecutedTask("InstallLdap");
         }
 
-        internal void InstallStorage()
+        public void InstallStorage(InstallerProcess installerProcess)
         {
             this.logger.LogInformation("Install Storage");
+            if (!installerProcess.ExecutedActions.Contains("InstallStarterkitCommon"))
+            {
+                InstallStarterkitCommon(installerProcess);
+            }
+
             // this.KubernetesHelper.InstallResourceIfNotExists("longhorn-system", "namespace");
             // this.KubernetesHelper.InstallApplicationeIfNotExists(
             //     "longhorn",
@@ -81,9 +70,14 @@ namespace Installer
             //     );
         }
 
-        internal void InstallJenkins()
+        public void InstallJenkins(InstallerProcess installerProcess)
         {
             this.logger.LogInformation("Install Jenkins");
+            if (!installerProcess.ExecutedActions.Contains("InstallStarterkitCommon"))
+            {
+                InstallStarterkitCommon(installerProcess);
+            }
+
             this.kubernetesHelper.InstallResourceIfNotExists(
                 "starterkit",
                 "configmap",
@@ -95,14 +89,17 @@ namespace Installer
                 "starterkit",
                 $"-f ./../components/jenkins/values.yaml --set master.ingress.hostName=jenkins.{this.options.Dns}",
                 "deploy/jenkins");        
+            installerProcess.AddExecutedTask("InstallJenkins");
+
         }
 
-        internal void UninstallStarterKit()
+        public void UninstallStarterKit(InstallerProcess installerProcess)
         {
             this.logger.LogInformation("Uninstall Starterkit");
             this.kubernetesHelper.UnInstallApplicationeIfExists("jenkins", "starterkit");
             this.kubernetesHelper.UnInstallApplicationeIfExists("ldap-ui", "starterkit");
             this.kubernetesHelper.UnInstallApplicationeIfExists("ldap", "starterkit");
         }
+
     }
 }

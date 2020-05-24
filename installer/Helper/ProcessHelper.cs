@@ -46,9 +46,9 @@ namespace Installer.Helper
                 {
                     if (!noEcho)
                     {
-                        this.logger.LogInformation(eventArgs.Data);
+                        this.logger.LogDebug(eventArgs.Data);
                     }
-                    this.output.Append(eventArgs.Data);
+                    this.output.Append(eventArgs.Data + Environment.NewLine);
                 }
             };
             
@@ -58,7 +58,7 @@ namespace Installer.Helper
                 {
                     if (!noEcho)
                     {
-                        this.logger.LogError(eventArgs.Data);
+                        this.logger.LogError(eventArgs.Data + Environment.NewLine);
                     }
                 }
             };
