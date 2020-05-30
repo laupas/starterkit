@@ -18,7 +18,10 @@ namespace Installer
 
         [Option('d', "dns", Required = false, HelpText = "Set DNS Name to be used.", Default = "starterkit.devops.family")]
         public string Dns { get; set; }
-        
+
+        // [Option('u', "uninstall", Required = false, HelpText = "Uninstall starterkit.")]
+        // public bool Uninstall { get; set; }
+
         internal void LogOptions(ILogger logger)
         {
             logger.LogInformation("======================================================================");
@@ -42,9 +45,14 @@ namespace Installer
                     errorList.ToList().ForEach(error => 
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine($"Error {error.Tag}");
+                        Console.WriteLine($"Error: {error.Tag}");
                         Console.ForegroundColor = ConsoleColor.White;
                     });
+
+                    if (errorList.Any())
+                    {
+                        throw new Exception("Wrong arguments defined.");
+                    }
                 });
             return options;
         }
