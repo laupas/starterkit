@@ -57,7 +57,7 @@ namespace Build
             Target("pack", DependsOn("init"), () =>
             {
 //                var nugetOrgToken = GetConfigValue<string>("NUGET_ORG_API_KEY");
-                RunProcess("docker", $"build -t devopsfamily/starterkit.installer:{buildNumber} .", "./..");
+                RunProcess("docker", $"build -t laupas/starterkit.installer:{buildNumber} .", "./..");
             });
             
             RunTargetAndExit(args);

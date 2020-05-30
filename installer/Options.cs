@@ -28,6 +28,7 @@ namespace Installer
             logger.LogInformation("Command Line Options");
             logger.LogInformation("======================================================================");
             logger.LogInformation($"Verbose:           {this.Verbose}");
+            logger.LogInformation($"Silent:            {this.Silent}");
             logger.LogInformation($"Dns:               {this.Dns}");
             logger.LogInformation($"CurrentDirectory:  {Directory.GetCurrentDirectory()}");
         }

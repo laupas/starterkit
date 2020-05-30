@@ -48,17 +48,18 @@ namespace Installer
             var ssl = "self";
             this.logger.LogInformation("Install Ingress");
             this.kubernetesHelper.InstallResourceIfNotExists("ingress-nginx", "namespace", string.Empty);
-            this.kubernetesHelper.InstallResourceIfNotExists(
-                "ingress-default-cert",
-                "secret tls",
-                "ingress-nginx",
-                $"--cert=./../ssl/{ssl}/server.crt --key=./../ssl/{ssl}/server.key ");
+            // this.kubernetesHelper.InstallResourceIfNotExists(
+            //     "ingress-default-cert",
+            //     "secret tls",
+            //     "ingress-nginx",
+            //     $"--cert=./../ssl/{ssl}/server.crt --key=./../ssl/{ssl}/server.key ");
                     
             this.kubernetesHelper.InstallApplicationeIfNotExists(
                 "ingress-nginx",
                 "stable/nginx-ingress",
                 "ingress-nginx",
-                "--set controller.extraArgs.default-ssl-certificate=ingress-nginx/ingress-default-cert",
+                "",
+                // "--set controller.extraArgs.default-ssl-certificate=ingress-nginx/ingress-default-cert",
                 "deployment.apps/ingress-nginx-nginx-ingress-controller",
                 "deployment.apps/ingress-nginx-nginx-ingress-default-backend");        
         }
