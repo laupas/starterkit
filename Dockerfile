@@ -28,7 +28,6 @@ RUN dotnet publish  -c Release -o /app/installer/out
 FROM run
 WORKDIR /app
 COPY --from=build /app/installer/out ./
-COPY ./ssl /ssl
 COPY ./components /components
 
 ENTRYPOINT [ "dotnet", "installer.dll" ]
