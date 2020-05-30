@@ -89,6 +89,7 @@ namespace Installer
                 "starterkit",
                 $"-f ./../components/jenkins/values.yaml --set master.ingress.hostName=jenkins.{this.options.Dns}",
                 "deploy/jenkins");        
+            
             installerProcess.AddExecutedTask("InstallJenkins");
 
         }

@@ -1,4 +1,5 @@
-﻿using LauPas.Common;
+﻿using System;
+using LauPas.Common;
 
 namespace Installer
 {
@@ -7,10 +8,17 @@ namespace Installer
     {
         static void Main(string[] args)
         {
-            Starter.Create()
-                .AddModule<InstallerModule, string[]>(args)
-                .Build(args)
-                .Resolve<installer.Installer>().Install();
+            try
+            {
+                Starter.Create()
+                    .AddModule<InstallerModule, string[]>(args)
+                    .Build(args)
+                    .Resolve<installer.Installer>().Install();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
     }
 }

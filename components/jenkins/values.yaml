@@ -339,17 +339,26 @@ master:
                 definition {
                   cps {
                     sandbox()
-
                     script('''
-
                       pipeline {
                         agent {
-                            docker { 
-                                image 'mullnerz/ansible-playbook' 
-                                args '-v $WORKSPACE/:/work'
-                            }
+                          kubernetes {
+                            yaml """
+                              apiVersion: v1
+                              kind: Pod
+                              metadata:
+                                labels:
+                                  jenkins-job: load-plugin
+                              spec:
+                                containers:
+                                  - name: ansible
+                                    image: mullnerz/ansible-playbook
+                                    command:
+                                      - cat
+                                    tty: true
+                        """
                         }
-
+                      }
                         stages {
                           stage("Prepare Build Environment") {
                             steps{
@@ -379,12 +388,13 @@ master:
                             steps{
                               withCredentials(
                               [
-                                usernamePassword(credentialsId: "consul", passwordVariable: 'consul_token', usernameVariable: 'not_used'),
                                 usernamePassword(credentialsId: "^${params.Credential}", passwordVariable: 'password', usernameVariable: 'user')
                               ]) {
-                                sh "cp /var/starterkit/loadPlugin/vault.py ./vault.py"
-                                sh "chmod +x ./vault.py"
-                                sh  "export ANSIBLE_VAULT_PASSWORD=^${password}; ansible-playbook /var/starterkit/loadPlugin/load_plugin.yaml --vault-password-file ./vault.py -vv -e 'ipaddress=consul secret_password=^${consul_token} workspace=^${WORKSPACE} project_name=\\"^${params.Name}\\" credential=^${params.Credential} branch=^${params.Branch} plugin_url=^${params.PluginUrl}'"
+                                container('ansible') {
+                                  sh "cp /var/starterkit/loadPlugin/vault.py ./vault.py"
+                                  sh "chmod +x ./vault.py"
+                                  sh  "export ANSIBLE_VAULT_PASSWORD=^${password}; ansible-playbook /var/starterkit/loadPlugin/load_plugin.yaml --vault-password-file ./vault.py -vv -e 'workspace=^${WORKSPACE} project_name=\\"^${params.Name}\\" credential=^${params.Credential} branch=^${params.Branch} plugin_url=^${params.PluginUrl}'"                                
+                                }
                               }
                             }
                           }
@@ -580,26 +590,8 @@ agent:
   envVars: []
   # - name: PATH
   #   value: /usr/local/bin
-  volumes:
-    # - type: HostPath
-    #   mountPath: /var/run/docker.sock  
-    #   hostPath: /var/run/docker.sock  
-    - type: ConfigMap
-      mountPath: /var/starterkit/loadPlugin
-      configMapName: starterkit
-  # - type: HostPath
-  #   mountPath: /home/jenkins/agent
-  #   hostPath: /home/jenkins/agent
-  # - type: EmptyDir
-  #   mountPath: /home/jenkins/agent
-  #   memory: false
+  volumes: []
 
-  # - type: Secret
-  #   secretName: mysecret
-  #   mountPath: /var/myapp/mysecret
-  # - type: EmptyDir
-  #   mountPath: "/var/lib/containers"
-  #   memory: false
   nodeSelector: {}
   # Key Value selectors. Ex:
   # jenkins-agent: v1
