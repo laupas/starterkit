@@ -313,12 +313,17 @@ master:
             domainCredentials:
             - credentials:
               - usernamePassword:
-                  id: "exampleuser-creds-id"
+                  id: "exampleuser"
                   username: "exampleuser"
                   password: "{AQAAABAAAAAQ1/JHKggxIlBcuVqegoa2AdyVaNvjWIFk430/vI4jEBM=}"
                   description: "Sample credentials of exampleuser"
                   scope: GLOBAL
-
+              - string:
+                  description: "starterkit_default_vault"
+                  id: "starterkit_default_vault"
+                  scope: GLOBAL
+                  secret: "starterkit"
+      
       starter_kit_folder: |
         jobs:
           - script: folder('starterkit')
@@ -330,7 +335,13 @@ master:
                     stringParam('Name', 'name', 'Name')
                     stringParam('PluginUrl', 'https://github.com/LivingDevOps/LiDOP.helloworld_nodejs.git', 'https://url.github.com')
                     stringParam('Branch', 'master', 'Branch to load')
-                    credentialsParam('Credential') {
+                    credentialsParam('VaultPassword') {
+                      type('org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl')
+                      required()
+                      defaultValue('starterkit_default_vault')
+                      description('Credential used for ansible vault variables')
+                    }
+                    credentialsParam('GitCredential') {
                       type('com.cloudbees.plugins.credentials.common.StandardCredentials')
                       description('Credential needed to git clone')
                     }
@@ -347,6 +358,7 @@ master:
                               apiVersion: v1
                               kind: Pod
                               metadata:
+                                name: test
                                 labels:
                                   jenkins-job: load-plugin
                               spec:
@@ -356,6 +368,13 @@ master:
                                     command:
                                       - cat
                                     tty: true
+                                    volumeMounts:
+                                      - name: starterkit
+                                        mountPath: /var/starterkit/loadPlugin
+                                volumes:
+                                  - name: starterkit
+                                    configMap:
+                                      name: starterkit
                         """
                         }
                       }
@@ -378,7 +397,7 @@ master:
                                   doGenerateSubmoduleConfigurations: false,
                                   extensions: [],
                                   submoduleCfg: [],
-                                  userRemoteConfigs: [[credentialsId: "^${params.Credential}", url: "^${params.PluginUrl}"]]])
+                                  userRemoteConfigs: [[credentialsId: "^${GitCredential}", url: "^${params.PluginUrl}"]]])
                                   env.GIT_RESULT = gitResult.toString()
                               }
                             }
@@ -388,7 +407,7 @@ master:
                             steps{
                               withCredentials(
                               [
-                                usernamePassword(credentialsId: "^${params.Credential}", passwordVariable: 'password', usernameVariable: 'user')
+                                string(credentialsId: "^${VaultPassword}", variable: 'password')
                               ]) {
                                 container('ansible') {
                                   sh "cp /var/starterkit/loadPlugin/vault.py ./vault.py"
@@ -502,11 +521,10 @@ master:
     # Set this path to jenkinsUriPrefix above or use annotations to rewrite path
     # path: "/jenkins"
     # configures the hostname e.g. jenkins.example.com
-    hostName: undef
+    hostName: jenkins.starterkit.devops.family
     tls:
-    # - secretName: jenkins.cluster.local
-    #   hosts:
-    #     - jenkins.cluster.local
+      - hosts:
+        - jenkins.starterkit.devops.family
 
   # If you're running on GKE and need to configure a backendconfig
   # to finish ingress setup, use the following values.

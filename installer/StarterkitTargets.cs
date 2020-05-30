@@ -24,7 +24,7 @@ namespace Installer
             this.logger.LogInformation("Install Starterkit Commons");
 
             this.kubernetesHelper.CreateNameSpace("starterkit");
-            this.processHelper.Run("kubectl", "apply -f ./../components/common/cert.yaml");
+            // this.processHelper.Run("kubectl", "apply -f ./../components/common/cert.yaml");
             installerProcess.AddExecutedTask("InstallStarterkitCommon");
         }
 
@@ -46,7 +46,7 @@ namespace Installer
                 "ldap-ui",
                 "",
                 "starterkit",
-                $"./../components/openldapui --set ingress.hosts[0].host=ldap.{this.options.Dns} --set ingress.hosts[0].paths[0]=/",
+                $"./../components/openldapui",
                 "deploy/ldap-ui-openldapui");      
             installerProcess.AddExecutedTask("InstallLdap");
         }
@@ -87,7 +87,7 @@ namespace Installer
                 "jenkins",
                 "stable/jenkins",
                 "starterkit",
-                $"-f ./../components/jenkins/values.yaml --set master.ingress.hostName=jenkins.{this.options.Dns}",
+                $"-f ./../components/jenkins/values.yaml",
                 "deploy/jenkins");        
             
             installerProcess.AddExecutedTask("InstallJenkins");
