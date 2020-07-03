@@ -15,7 +15,7 @@
 docker run --rm -it -v $HOME/.kube:/root/.kube laupas/starterkit.installer --verbose
 `````
 
-## Install starterkit on Windows
+## Run starterkit on Windows
 
 1. Enable Kubernetes in Docker Desktop (Docker Desktop preferences)
 2. Ensure your kubectl points to docker-desktop (Docker Desktop Menu => Kubernetes)
@@ -28,7 +28,7 @@ docker run --rm -it -v %homepath%/.kube:/root/.kube laupas/starterkit.installer 
 
 `````
 #in Powershell
-docker run --rm -it -v $HOME/.kube:/root/.kube devopsfamily/starterkit.installer --verbose
+docker run --rm -it -v $HOME/.kube:/root/.kube laupas/starterkit.installer --verbose
 `````
 
 ## Use starterkit
